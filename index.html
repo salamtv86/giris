@@ -1,0 +1,1186 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2B3FC4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Məktəb Giriş Jurnalı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500;600&family=Onest:wght@400;500;600;700&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: sticky header with tabs over one working column (max 1040px). The Skaner tab opens with the camera
+   stage; a result floods the stage in the gate colour (green gəldi, ink blue çıxdı, amber təkrar, red xəta). */
+:root{
+  --paper:#EDF0F6;--surface:#FFFFFF;--surface-2:#F4F6FA;--ink:#131A36;--muted:#58617E;--line:#D7DCE8;--grid:#DDE4F2;--margin:#E0475B;
+  --accent:#2B3FC4;--accent-soft:#E3E8FB;--on-accent:#FFFFFF;
+  --go:#0E7A46;--go-soft:#DCF2E4;--on-go:#FFFFFF;
+  --stop:#C2392A;--stop-soft:#FBE4E0;--on-stop:#FFFFFF;
+  --warn:#8C5B00;--warn-soft:#FAEDD0;--on-warn:#FFFFFF;
+  --night:#0B1022;--on-night:#E6E9F4;
+  --shadow:0 1px 2px rgba(19,26,54,.07),0 6px 20px rgba(19,26,54,.06);
+  --f-display:"Unbounded","Onest",system-ui,sans-serif;
+  --f-body:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --f-mono:"Martian Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0D1121;--surface:#151A2E;--surface-2:#1B2137;--ink:#E6E9F4;--muted:#9BA3C0;--line:#283050;--grid:#1E2641;--margin:#F06A7B;
+    --accent:#8B9DFF;--accent-soft:#222A52;--on-accent:#0B1030;
+    --go:#45C985;--go-soft:#123425;--on-go:#04180D;
+    --stop:#FF7B6C;--stop-soft:#3B1B18;--on-stop:#1E0603;
+    --warn:#F0B44A;--warn-soft:#3A2C10;--on-warn:#1F1402;
+    --night:#060912;--on-night:#E6E9F4;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 8px 24px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-text-size-adjust:100%;padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3,p,ol,figure{margin:0}
+img{max-width:100%}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1040px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.hint{color:var(--muted);font-size:13.5px;max-width:70ch}
+.warn-txt{color:var(--warn);font-weight:600}
+svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;opacity:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* header */
+.top{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.brand{display:flex;align-items:center;gap:12px;padding-block:12px 4px}
+.mark{width:30px;height:30px;flex:none}
+.mark .m1{fill:var(--accent)}.mark .m2{fill:none;stroke:var(--on-accent);stroke-width:2.6}.mark .m3{fill:var(--on-accent)}
+.brand-txt{min-width:0;flex:1}
+.brand-name{font-family:var(--f-display);font-weight:700;font-size:15px;line-height:1.25;letter-spacing:-.01em}
+.brand-school{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sync{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.sync i{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none}
+.sync[data-s="ok"] i{background:var(--go)}.sync[data-s="busy"] i{background:var(--warn)}.sync[data-s="err"] i{background:var(--stop)}
+@media (max-width:480px){.sync span{display:none}}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-inline:-8px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;background:none;border:0;border-bottom:2.5px solid transparent;padding:10px 8px;margin-bottom:-1px;font-weight:600;font-size:14px;color:var(--muted);white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:6px}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.count{font-family:var(--f-mono);font-size:11px;font-weight:600;min-width:20px;height:19px;padding:0 6px;border-radius:10px;background:var(--warn);color:var(--on-warn);display:inline-grid;place-items:center}
+
+/* layout */
+main{padding-block:16px 72px}
+.view{display:grid;gap:16px;min-width:0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px;min-width:0}
+.block{display:grid;gap:10px;min-width:0}
+.sec{font-family:var(--f-display);font-weight:500;font-size:16.5px;letter-spacing:-.01em;line-height:1.3;text-wrap:balance}
+.lede{color:var(--muted);font-size:14px;max-width:68ch}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:8px 12px;flex-wrap:wrap}
+.notice{border-radius:12px;padding:12px 14px;background:var(--warn-soft);color:var(--ink);border:1px solid var(--line);font-size:14px}
+.notice b{color:var(--warn)}
+.notice.ok{background:var(--go-soft)}.notice.ok b{color:var(--go)}
+.acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* camera stage */
+.stage{position:relative;width:100%;aspect-ratio:4/3;min-height:260px;max-height:62vh;border-radius:18px;overflow:hidden;background:var(--night);color:var(--on-night);isolation:isolate}
+.stage video{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;object-fit:cover;display:block;background:var(--night)}
+.stage.mirror video{transform:scaleX(-1)}
+.stage .frame{position:absolute;left:50%;top:50%;width:58%;width:min(58%,62vh);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;opacity:0;transition:opacity .2s}
+.stage.live .frame{opacity:.9}
+.stage .frame i{position:absolute;width:22%;height:22%;border:4px solid #FFFFFF;border-radius:6px}
+.stage .frame i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0}
+.stage .frame i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0}
+.stage .frame i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0}
+.stage .frame i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0}
+.stage .cap{position:absolute;left:0;right:0;bottom:0;padding:28px 16px 12px;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#FFFFFF;font-weight:600;font-size:14.5px;text-align:center;opacity:0;transition:opacity .2s}
+.stage.live .cap{opacity:1}
+.stage .clock{position:absolute;top:10px;right:14px;font-size:12px;color:#FFFFFF;opacity:.85;z-index:2;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.off{position:absolute;top:0;right:0;bottom:0;left:0;display:grid;align-content:center;gap:10px;padding:24px 20px 24px 54px;background-color:var(--surface);color:var(--ink);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:20px 20px}
+.off::before{content:"";position:absolute;top:0;bottom:0;left:36px;width:2px;background:var(--margin);opacity:.75}
+.stage.live .off{display:none}
+.off .big{font-family:var(--f-display);font-weight:500;font-size:clamp(24px,6vw,44px);line-height:1.05;letter-spacing:-.02em}
+.off .acts{margin-top:6px}
+.ov{position:absolute;top:0;right:0;bottom:0;left:0;z-index:3;display:grid;align-content:center;gap:2px;padding:24px 22px;opacity:0;visibility:hidden;transition:opacity .15s,visibility .15s}
+.ov.show{opacity:1;visibility:visible}
+.ov[data-k="wait"]{background:rgba(11,16,34,.82);color:#FFFFFF}
+.ov[data-k="in"]{background:var(--go);color:var(--on-go)}
+.ov[data-k="out"]{background:var(--accent);color:var(--on-accent)}
+.ov[data-k="dup"],.ov[data-k="queued"]{background:var(--warn);color:var(--on-warn)}
+.ov[data-k="err"],.ov[data-k="unknown"],.ov[data-k="bad"]{background:var(--stop);color:var(--on-stop)}
+.sig-word{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,10vw,92px);line-height:1;letter-spacing:-.02em;overflow-wrap:anywhere;text-wrap:balance}
+.sig-name{font-family:var(--f-display);font-weight:500;font-size:clamp(19px,4.6vw,34px);line-height:1.2;margin-top:12px;text-wrap:balance;overflow-wrap:anywhere}
+.sig-meta{font-size:15.5px;opacity:.93;margin-top:6px;max-width:62ch}
+.spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(255,255,255,.3);border-top-color:#FFFFFF;animation:sp 0.8s linear infinite;margin-bottom:10px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* controls */
+.btn{appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 15px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;font-size:14.5px;line-height:1.2;cursor:pointer;text-decoration:none;white-space:nowrap;user-select:none}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.go{background:var(--go);border-color:var(--go);color:var(--on-go)}
+.btn.big{min-height:54px;font-size:16px;border-radius:14px;padding:0 20px}
+.btn.sm{min-height:34px;padding:0 10px;font-size:13.5px;border-radius:8px;gap:6px}
+.btn.sm svg.i{width:17px;height:17px}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--ink);background:var(--surface-2)}
+.btn.danger{color:var(--stop)}
+.btn:disabled,.btn.is-off{opacity:.45;pointer-events:none}
+.cam-acts{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cam-acts .grow{flex:1 1 200px}
+.field{display:grid;gap:6px;min-width:0}
+.field>span{font-size:13px;font-weight:600;color:var(--muted)}
+.inp{width:100%;min-height:42px;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink)}
+.inp:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.filters>*{flex:1 1 170px}
+.filters>.grow{flex:3 1 230px}
+.filters>.btn,.filters>.seg{flex:0 0 auto}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px}
+.chk{display:inline-flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--accent);margin:0}
+.seg{display:inline-flex;gap:2px;padding:3px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);max-width:100%;overflow-x:auto}
+.seg button{appearance:none;border:0;background:none;padding:8px 12px;border-radius:9px;font-weight:600;font-size:14px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.row-line{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+
+/* last result */
+.last{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between}
+.last .who{min-width:0;flex:1 1 220px}
+.confirm{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--stop-soft);color:var(--ink);font-size:14px}
+.confirm>span{flex:1 1 220px}
+
+/* numbers, lists */
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--line);gap:1px}
+.stat{background:var(--surface);padding:12px 14px;min-width:0}
+.stat b{display:block;font-family:var(--f-mono);font-weight:600;font-size:clamp(20px,4.5vw,26px);line-height:1.15;font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--muted)}
+.stat.go b{color:var(--go)}.stat.out b{color:var(--accent)}.stat.no b{color:var(--stop)}
+@media (max-width:540px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:6px 12px;font-weight:600;font-size:13.5px;color:var(--muted);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.chip .n{font-family:var(--f-mono);font-size:12px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.grp{display:flex;justify-content:space-between;gap:12px;padding:9px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted)}
+.grp b{color:var(--ink);font-family:var(--f-display);font-weight:500}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:11px 14px;border-bottom:1px solid var(--line);min-width:0}
+.list>.row:last-child{border-bottom:0}
+.row-main{flex:1 1 180px;min-width:0}
+.row-side{display:flex;align-items:center;gap:6px 10px;flex-wrap:wrap;justify-content:flex-end;min-width:0}
+.nm{font-weight:600;overflow-wrap:anywhere}
+.nm.big{font-family:var(--f-display);font-weight:500;font-size:19px;line-height:1.25}
+.sub{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.tm{font-family:var(--f-mono);font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.tm b{color:var(--ink);font-weight:600}
+.pill{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:12px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.pill.in{background:var(--go-soft);color:var(--go)}
+.pill.out{background:var(--accent-soft);color:var(--accent)}
+.pill.no{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.stop{background:var(--stop-soft);color:var(--stop)}
+.empty{padding:26px 18px;text-align:center;color:var(--muted);display:grid;gap:4px;justify-items:center}
+.empty b{color:var(--ink);font-family:var(--f-display);font-weight:500;font-size:15px}
+.prog{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:14px}
+.cards figure{display:grid;gap:6px}
+.cards img{display:block;width:100%;height:auto;border-radius:10px;box-shadow:var(--shadow)}
+.cards figcaption{font-size:12.5px;color:var(--muted)}
+.qrbox{display:grid;gap:10px;justify-items:start}
+.qrbox canvas{background:#FFFFFF;border-radius:12px;padding:10px;max-width:100%}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--surface);padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:var(--shadow);width:max-content;max-width:calc(100% - 32px);text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <svg class="mark" viewBox="0 0 30 30" aria-hidden="true"><rect class="m1" x="1" y="1" width="28" height="28" rx="8"/><rect class="m2" x="7.3" y="7.3" width="15.4" height="15.4" rx="3.6"/><rect class="m3" x="12" y="12" width="6" height="6" rx="1.6"/></svg>
+        <div class="brand-txt">
+          <div class="brand-name">Məktəb Giriş Jurnalı</div>
+          <div class="brand-school" id="schoolName">Skaner</div>
+        </div>
+        <div class="sync" id="sync" data-s="wait" role="status"><i></i><span>Qoşulmayıb</span></div>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="Bölmələr">
+        <button class="tab" type="button" role="tab" data-act="tab" data-tab="skaner" aria-selected="true">Skaner <span class="count" id="qCount" hidden>0</span></button>
+        <button class="tab" type="button" role="tab" data-act="tab" data-tab="bugun" aria-selected="false">Bu gün</button>
+        <button class="tab" type="button" role="tab" data-act="tab" data-tab="kartlar" aria-selected="false">Kartlar</button>
+        <button class="tab" type="button" role="tab" data-act="tab" data-tab="ayarlar" aria-selected="false">Ayarlar</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="notice" id="notice" hidden></div>
+
+    <section class="view" id="v-skaner" aria-label="Skaner">
+      <div class="stage" id="stage">
+        <video id="video" playsinline muted></video>
+        <div class="frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <div class="cap" id="cap">Kartın QR kodunu çərçivəyə tutun</div>
+        <div class="clock mono" id="clock"></div>
+        <div class="off" id="off">
+          <div class="big" id="offTitle">Kamera bağlıdır</div>
+          <div class="sig-meta" id="offText">Kartları oxumaq üçün kameranı açın. USB və ya Bluetooth QR skaner qoşulubsa, kamera lazım deyil.</div>
+          <div class="acts"><button class="btn primary big" type="button" data-act="cam-start" id="camStartBig">Kameranı aç</button></div>
+        </div>
+        <div class="ov" id="ov" aria-live="assertive"></div>
+      </div>
+      <div class="cam-acts">
+        <button class="btn" type="button" data-act="cam-toggle" id="camToggle">Kameranı aç</button>
+        <button class="btn" type="button" data-act="cam-flip" id="camFlip">Ön kamera</button>
+        <label class="btn" for="photo" id="photoBtn" hidden>Şəkil çək</label>
+        <input class="vh" id="photo" type="file" accept="image/*" capture="environment">
+        <div class="seg" id="modeSeg" role="group" aria-label="Skan rejimi">
+          <button type="button" data-act="mode" data-m="auto" aria-pressed="true">Avtomatik</button>
+          <button type="button" data-act="mode" data-m="in" aria-pressed="false">Yalnız giriş</button>
+          <button type="button" data-act="mode" data-m="out" aria-pressed="false">Yalnız çıxış</button>
+        </div>
+      </div>
+      <div class="notice" id="queueBar" hidden></div>
+      <div class="panel" id="lastCard" hidden></div>
+      <div class="panel">
+        <label class="field"><span>Kartını unudan şagird: adını yazın</span><input class="inp" id="mq" type="search" placeholder="Məsələn: Əliyev" autocomplete="off" enterkeyhint="search"></label>
+        <div class="list" id="mres" hidden></div>
+      </div>
+      <div class="block">
+        <div class="head"><h2 class="sec">Bu cihazda son skanlar</h2><span class="hint" id="recentInfo"></span></div>
+        <div class="list" id="recent"></div>
+      </div>
+      <p class="hint">Gün ərzində ilk skan gəliş, növbəti skan çıxış sayılır. USB və ya Bluetooth QR skaner qoşulubsa, kartı ona oxudun: kod özü qəbul olunur.</p>
+    </section>
+
+    <section class="view" id="v-bugun" aria-label="Bu gün" hidden>
+      <div class="head"><h2 class="sec" id="tTitle">Bu gün</h2><button class="btn sm" type="button" data-act="today-refresh">Yenilə</button></div>
+      <div id="tStats"></div>
+      <div class="filters">
+        <label class="field"><span>Sinif</span><select class="inp" id="tCls"><option value="">Bütün siniflər</option></select></label>
+        <label class="field grow"><span>Axtarış</span><input class="inp" id="tQ" type="search" placeholder="Şagirdin adı" autocomplete="off"></label>
+      </div>
+      <div class="chips" id="tChips" role="group" aria-label="Vəziyyət"></div>
+      <div class="list" id="tList"></div>
+      <p class="hint">Eyni məlumat Google cədvəlində «Bu gün» vərəqindədir.</p>
+    </section>
+
+    <section class="view" id="v-kartlar" aria-label="Kartlar" hidden>
+      <div class="panel">
+        <h2 class="sec">Çap üçün QR kartlar</h2>
+        <p class="lede">A4 vərəqdə 10 kart, hər biri bank kartı ölçüsündə (85,6 × 54 mm). Çapda miqyası 100% saxlayın və xətt boyunca kəsin. Laminasiya etsəniz, kart il boyu xarab olmaz.</p>
+        <form class="filters" id="kForm" autocomplete="off">
+          <label class="field"><span>Admin PIN-i</span><input class="inp" id="kPin" type="password" inputmode="numeric" autocomplete="off"></label>
+          <button class="btn primary" type="submit" id="kLoad">Siyahını yüklə</button>
+        </form>
+        <div class="filters" id="kTools" hidden>
+          <label class="field"><span>Sinif</span><select class="inp" id="kCls"><option value="">Bütün siniflər</option></select></label>
+          <button class="btn primary" type="button" data-act="k-pdf" id="kPdf">PDF yüklə</button>
+          <button class="btn" type="button" data-act="k-reload">Siyahını yenilə</button>
+        </div>
+        <div class="prog" id="kProg" hidden><i></i></div>
+        <p class="hint" id="kMsg" role="status"></p>
+      </div>
+      <div class="cards" id="kPrev"></div>
+    </section>
+
+    <section class="view" id="v-ayarlar" aria-label="Ayarlar" hidden>
+      <form class="panel" id="cfg" autocomplete="off" novalidate>
+        <h2 class="sec">Bu cihazı cədvələ qoşun</h2>
+        <p class="lede">Web app ünvanı və PIN Google cədvəlinizdən gəlir: «Təlimat» vərəqinin 2-ci addımına baxın.</p>
+        <label class="field"><span>Web app URL</span><input class="inp" id="cfApi" type="url" inputmode="url" placeholder="https://script.google.com/macros/s/…/exec" spellcheck="false"></label>
+        <div class="grid2">
+          <label class="field"><span>Skaner PIN-i</span><input class="inp" id="cfPin" type="password" inputmode="numeric" autocomplete="off"></label>
+          <label class="field"><span>Cihazın adı (jurnalda görünür)</span><input class="inp" id="cfDev" maxlength="40" placeholder="Məsələn: Əsas giriş"></label>
+        </div>
+        <div class="acts"><button class="btn primary" type="submit" id="cfSave">Yoxla və yadda saxla</button><span class="hint" id="cfMsg" role="status"></span></div>
+      </form>
+      <div class="panel" id="joinPanel" hidden>
+        <h2 class="sec">Başqa cihazı qoşun</h2>
+        <p class="lede">Bu QR-ı ikinci telefonun və ya planşetin kamerası ilə oxudun: ünvan və PIN özü yazılır. QR-ın içində PIN var, onu yalnız işçilərə göstərin.</p>
+        <div class="acts"><button class="btn" type="button" data-act="join-show" id="joinBtn">QR-ı göstər</button></div>
+        <div class="qrbox" id="joinBox" hidden></div>
+      </div>
+      <div class="panel">
+        <h2 class="sec">Bu cihazın ayarları</h2>
+        <div class="row-line">
+          <label class="chk"><input type="checkbox" id="optSound"> Səs siqnalı</label>
+          <label class="chk"><input type="checkbox" id="optAwake"> Ekran sönməsin</label>
+          <label class="chk"><input type="checkbox" id="optAuto"> Səhifə açılanda kamera özü açılsın</label>
+        </div>
+        <p class="hint">Girişdə bərkidilmiş planşet üçün «Ön kamera» seçin: şagird kartını özü tutur və nəticəni ekranda görür.</p>
+      </div>
+      <div class="panel">
+        <h2 class="sec">Cihazı ayır</h2>
+        <p class="lede">Ünvan, PIN və bu cihazın növbəsi silinir. Cədvəldəki məlumatlara toxunulmur.</p>
+        <div class="acts" id="forgetBox"><button class="btn danger" type="button" data-act="forget">Bu cihazı ayır</button></div>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+(() => {
+'use strict';
+const PDF_LIB = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
+const MONTHS = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avqust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
+const WEEK = ['bazar', 'bazar ertəsi', 'çərşənbə axşamı', 'çərşənbə', 'cümə axşamı', 'cümə', 'şənbə'];
+const TABS = ['skaner', 'bugun', 'kartlar', 'ayarlar'];
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const clean = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+const debounce = (fn, ms) => { let t = 0; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('mgj.' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('mgj.' + k, JSON.stringify(v)); } catch (e) { /* storage full or blocked */ } },
+  del(k) { try { localStorage.removeItem('mgj.' + k); } catch (e) { /* ignore */ } }
+};
+function uid() {
+  const b = new Uint8Array(10);
+  crypto.getRandomValues(b);
+  return Date.now().toString(36) + Array.from(b, x => x.toString(36).padStart(2, '0')).join('').slice(0, 12);
+}
+const hm = ms => { const d = new Date(ms); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+function luhn(s) {
+  let sum = 0, dbl = true;
+  for (let i = s.length - 1; i >= 0; i--) {
+    let d = s.charCodeAt(i) - 48;
+    if (dbl) { d *= 2; if (d > 9) d -= 9; }
+    sum += d; dbl = !dbl;
+  }
+  return String((10 - (sum % 10)) % 10);
+}
+const codeOk = c => /^\d{12}$/.test(c) && luhn(c.slice(0, 11)) === c[11];
+const fmtCode = c => String(c || '').replace(/^(\d{4})(\d{4})(\d{4})$/, '$1 $2 $3');
+function fold(s) {
+  let t = String(s == null ? '' : s);
+  try { t = t.toLocaleLowerCase('az'); } catch (e) { t = t.toLowerCase(); }
+  return t.replace(/ə/g, 'e').replace(/ı/g, 'i').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g').normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+const collator = (() => { try { return new Intl.Collator('az', { numeric: true, sensitivity: 'base' }); } catch (e) { return new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }); } })();
+const byClsName = (a, b) => collator.compare(a.cls, b.cls) || collator.compare(a.name, b.name);
+const ICON = {
+  send: '<path d="m4 11.8 15.5-7.3-4.6 15-3.4-5.8z"/><path d="m11.5 13.7 8-9.2"/>',
+  undo: '<path d="M8.5 6.5 4 11l4.5 4.5"/><path d="M4.5 11H15a4.5 4.5 0 0 1 0 9h-3"/>',
+  cam: '<path d="M3.5 8.5h3.2l1.8-2.8h7l1.8 2.8h3.2v10.8h-17z"/><circle cx="12" cy="13.6" r="3.6"/>'
+};
+const icon = n => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICON[n] || ''}</svg>`;
+
+/* ---------- state ---------- */
+const savedMode = store.get('mode', 'auto');
+const S = {
+  api: String(store.get('api', '') || ''), pin: String(store.get('pin', '') || ''), device: String(store.get('device', '') || ''),
+  school: String(store.get('school', '') || ''), info: store.get('info', null),
+  mode: ['auto', 'in', 'out'].includes(savedMode) ? savedMode : 'auto',
+  facing: store.get('facing', 'environment') === 'user' ? 'user' : 'environment',
+  sound: store.get('sound', true) !== false, awake: store.get('awake', false) === true, camAuto: store.get('camAuto', true) !== false,
+  outbox: Array.isArray(store.get('outbox', [])) ? store.get('outbox', []) : [],
+  recent: [], last: null, confirmCancel: false,
+  stream: null, camToken: 0, detector: null, seen: new Map(), flushing: false, conn: 'wait',
+  tab: 'skaner', today: null, todayErr: '', tLoad: false, tCls: '', tQ: '', tSt: 'all',
+  roster: null, rosterSchool: '', kCls: '', kSig: '', wl: null, ovTimer: 0, toastT: 0
+};
+(function loadRecent() {
+  const r = store.get('recent', null);
+  if (r && r.day === dayKey() && Array.isArray(r.items)) S.recent = r.items;
+})();
+const saveRecent = () => store.set('recent', { day: dayKey(), items: S.recent.slice(0, 40) });
+const saveOutbox = () => store.set('outbox', S.outbox);
+
+/* ---------- API (Google Apps Script) ---------- */
+async function api(action, data, timeoutMs) {
+  if (!S.api) { const e = new Error('noapi'); e.code = 'noapi'; throw e; }
+  const ctrl = new AbortController();
+  const tm = setTimeout(() => ctrl.abort(), timeoutMs || 30000);
+  try {
+    const res = await fetch(S.api, { method: 'POST', body: JSON.stringify(Object.assign({ action, pin: S.pin }, data || {})), signal: ctrl.signal, redirect: 'follow', cache: 'no-store' });
+    const text = await res.text();
+    try { return JSON.parse(text); }
+    catch (e) { const er = new Error('notjson'); er.code = 'notjson'; throw er; }
+  } catch (e) {
+    if (e.code) throw e;
+    const er = new Error('net'); er.code = 'net'; throw er;
+  } finally { clearTimeout(tm); }
+}
+function errText(code, msg) {
+  return ({
+    pin: 'PIN səhvdir. «Ayarlar»da skaner PIN-ini yoxlayın.',
+    locked: 'Çox səhv PIN yazılıb. Sistem 10 dəqiqəlik bağlanıb.',
+    busy: 'Cədvəl məşğuldur, bir azdan yenidən cəhd edilir.',
+    net: 'İnternet bağlantısı yoxdur.',
+    notjson: 'Cədvəl cavab vermədi. Yerləşdirmədə «Who has access: Anyone» seçildiyini və ünvanın /exec ilə bitdiyini yoxlayın.',
+    noapi: 'Bu cihaz hələ cədvələ qoşulmayıb. «Ayarlar» bölməsinə keçin.',
+    server: 'Cədvəldə xəta: ' + (msg || '')
+  })[code] || ('Xəta: ' + (msg || code || ''));
+}
+function setConn(s) {
+  S.conn = s;
+  const el = $('#sync');
+  let st = 'wait', t = 'Qoşulmayıb';
+  if (!S.api) { st = 'wait'; t = 'Qoşulmayıb'; }
+  else if (S.outbox.length) { st = 'err'; t = `Göndərilməyib: ${S.outbox.length}`; }
+  else if (s === 'busy') { st = 'busy'; t = 'Göndərilir…'; }
+  else if (s === 'err') { st = 'err'; t = 'Bağlantı yoxdur'; }
+  else if (s === 'ok') { st = 'ok'; t = 'Qoşuludur'; }
+  el.dataset.s = st; el.lastElementChild.textContent = t; el.title = t;
+  const q = $('#qCount');
+  q.hidden = !S.outbox.length; q.textContent = String(S.outbox.length);
+}
+function showNotice(html, ok) {
+  const el = $('#notice');
+  if (!html) { el.hidden = true; return; }
+  el.innerHTML = html; el.classList.toggle('ok', !!ok); el.hidden = false;
+}
+
+/* ---------- scanning ---------- */
+let badShownAt = 0;
+function onCode(raw, via) {
+  const code = String(raw == null ? '' : raw).replace(/\D/g, '');
+  if (!codeOk(code)) {
+    if (Date.now() - badShownAt > 4000) { badShownAt = Date.now(); overlay('bad', W('YAD QR') + M('Bu QR kod məktəb kartına aid deyil.'), 2500); beep('err'); }
+    return;
+  }
+  const now = Date.now(), prev = S.seen.get(code);
+  if (prev && now - prev < 8000) return;
+  S.seen.set(code, now);
+  armAudio();
+  submit({ id: uid(), code, t: now, mode: S.mode, via, device: S.device || 'Skaner' });
+}
+async function submit(item) {
+  if (!S.api) { overlay('err', W('QOŞULMAYIB') + M(esc(errText('noapi'))), 4000); return; }
+  const rec = { id: item.id, t: item.t, code: item.code, status: 'pending' };
+  S.recent.unshift(rec); S.recent = S.recent.slice(0, 40);
+  renderRecent();
+  overlay('wait', '<div class="spin" aria-hidden="true"></div>' + W('YOXLANIR') + M('Kart oxundu: <span class="mono">' + esc(fmtCode(item.code)) + '</span>'), 0);
+  beep('tick');
+  setConn('busy');
+  let r;
+  try {
+    r = await api('scan', item);
+    if (r && r.ok === false && r.error === 'busy') { await sleep(1500); r = await api('scan', item); }
+  } catch (e) {
+    queueItem(item);
+    rec.status = 'queued';
+    renderRecent(); saveRecent();
+    overlay('queued', W('NÖVBƏYƏ') + M('İnternet yoxdur. Skan bu cihazda saxlandı və bağlantı gələndə özü göndəriləcək.'), 4500);
+    beep('warn');
+    setConn('err');
+    return;
+  }
+  if (r && r.ok === false && r.error === 'busy') {
+    queueItem(item); rec.status = 'queued'; renderRecent(); saveRecent();
+    overlay('queued', W('NÖVBƏYƏ') + M(esc(errText('busy'))), 4000);
+    setConn('ok');
+    return;
+  }
+  setConn('ok');
+  applyResult(rec, r, true);
+}
+const W = t => `<div class="sig-word">${esc(t)}</div>`;
+const M = h => `<div class="sig-meta">${h}</div>`;
+function notifyText(n) {
+  if (!n) return '';
+  return ({ sent: 'Valideynə WhatsApp göndərildi.', manual: 'Valideynə aşağıdakı «Valideynə yaz» düyməsi ilə yazın.', nophone: 'Valideyn nömrəsi yazılmayıb.', late: 'Gecikmiş qeyd: avtomatik mesaj getmədi.' })[n.status] || esc(n.label || '');
+}
+function applyResult(rec, r, live) {
+  if (!r || r.ok === false) {
+    rec.status = 'error';
+    rec.err = errText(r && r.error, r && r.message);
+    renderRecent(); saveRecent();
+    if (live) {
+      overlay('err', W(r && r.error === 'pin' ? 'PIN SƏHVDİR' : 'XƏTA') + M(esc(rec.err)), 5000);
+      beep('err');
+      if (r && (r.error === 'pin' || r.error === 'locked')) showNotice('<b>Skan qəbul olunmadı.</b> ' + esc(rec.err));
+    }
+    return;
+  }
+  Object.assign(rec, { status: 'done', kind: r.kind, name: r.name || '', cls: r.cls || '', time: r.time || '', notify: r.notify || null, row: r.row || 0, lastType: r.lastType || '', lastTime: r.lastTime || '' });
+  renderRecent(); saveRecent();
+  if (!live) return;
+  const nm = esc(rec.name), meta = `${esc(rec.cls)} sinif · <span class="mono">${esc(rec.time)}</span>`;
+  if (r.kind === 'in' || r.kind === 'out') {
+    overlay(r.kind, W(r.kind === 'in' ? 'GƏLDİ' : 'ÇIXDI') + `<div class="sig-name">${nm}</div>` + M(meta) + M(notifyText(rec.notify)), 3800);
+    beep(r.kind);
+    S.last = rec; S.confirmCancel = false; renderLast();
+  } else if (r.kind === 'dup') {
+    overlay('dup', W('TƏKRAR') + `<div class="sig-name">${nm}</div>` + M(`Artıq qeyd olunub: ${rec.lastType === 'out' ? 'çıxdı' : 'gəldi'} <span class="mono">${esc(rec.lastTime)}</span>. Bir də sayılmadı.`), 3500);
+    beep('warn');
+  } else if (r.kind === 'unknown') {
+    overlay('unknown', W('TANINMADI') + M(`Bu kart siyahıda yoxdur: <span class="mono">${esc(fmtCode(rec.code))}</span>. Karta yeni kod verilibsə, köhnəsi işləmir.`), 5000);
+    beep('err');
+  } else {
+    overlay('bad', W('YAD QR') + M('Bu QR kod məktəb kartına aid deyil.'), 3000);
+    beep('err');
+  }
+}
+function overlay(kind, html, ms) {
+  const ov = $('#ov');
+  clearTimeout(S.ovTimer);
+  ov.dataset.k = kind; ov.innerHTML = html; ov.classList.add('show');
+  if (ms) S.ovTimer = setTimeout(() => ov.classList.remove('show'), ms);
+}
+function renderLast() {
+  const box = $('#lastCard'), r = S.last;
+  if (!r) { box.hidden = true; return; }
+  box.hidden = false;
+  const pill = r.kind === 'in' ? '<span class="pill in">Gəldi</span>' : '<span class="pill out">Çıxdı</span>';
+  const n = r.notify || {};
+  const link = n.link ? `<a class="btn go" href="${esc(n.link)}" target="_blank" rel="noopener">${icon('send')}Valideynə yaz</a>` : '';
+  const cancelBtn = r.row && !r.cancelled ? `<button class="btn ghost danger" type="button" data-act="cancel-ask">${icon('undo')}Ləğv et</button>` : '';
+  let conf = '';
+  if (S.confirmCancel && r.row && !r.cancelled) conf = '<div class="confirm"><span>Bu qeyd ləğv edilsin? Jurnalda «Ləğv edildi» sətri yazılacaq. Valideynə mesaj gedibsə, geri qayıtmır.</span><button class="btn sm danger" type="button" data-act="cancel-yes">Bəli, ləğv et</button><button class="btn sm ghost" type="button" data-act="cancel-no">Xeyr</button></div>';
+  box.innerHTML = `<div class="last"><div class="who"><div class="eyebrow">Son nəticə</div><div class="nm big">${esc(r.name)}</div><div class="acts sub">${pill}<span>${esc(r.cls)} sinif</span><span class="mono">${esc(r.time)}</span>${r.cancelled ? '<span class="pill stop">Ləğv edildi</span>' : ''}</div><div class="sub">${esc(n.label || '')}</div></div><div class="acts">${link}${cancelBtn}</div>${conf}</div>`;
+}
+async function cancelLast() {
+  const r = S.last;
+  if (!r || !r.row) return;
+  S.confirmCancel = false;
+  try {
+    const res = await api('cancel', { row: r.row, device: S.device || 'Skaner' });
+    if (res && res.ok) { r.cancelled = true; toast('Qeyd ləğv edildi'); S.seen.delete(r.code); }
+    else toast(errText(res && res.error, res && res.message));
+  } catch (e) { toast(errText(e.code)); }
+  renderLast(); renderRecent(); saveRecent();
+}
+function renderRecent() {
+  const box = $('#recent');
+  $('#recentInfo').textContent = S.recent.length ? `${S.recent.length} skan` : '';
+  if (!S.recent.length) { box.innerHTML = '<div class="empty"><b>Bu gün hələ skan yoxdur</b><span>Oxunan kartlar burada görünəcək.</span></div>'; return; }
+  box.innerHTML = S.recent.slice(0, 25).map(r => {
+    let pill, main, sub;
+    if (r.status === 'pending') { pill = '<span class="pill no">Yoxlanır</span>'; main = 'Kart ' + fmtCode(r.code); sub = ''; }
+    else if (r.status === 'queued') { pill = '<span class="pill warn">Növbədə</span>'; main = 'Kart ' + fmtCode(r.code); sub = 'internet gələndə göndəriləcək'; }
+    else if (r.status === 'error') { pill = '<span class="pill stop">Xəta</span>'; main = 'Kart ' + fmtCode(r.code); sub = r.err || ''; }
+    else if (r.kind === 'in' || r.kind === 'out') { pill = r.cancelled ? '<span class="pill stop">Ləğv</span>' : r.kind === 'in' ? '<span class="pill in">Gəldi</span>' : '<span class="pill out">Çıxdı</span>'; main = r.name; sub = `${r.cls} sinif · ${(r.notify && r.notify.label) || ''}`; }
+    else if (r.kind === 'dup') { pill = '<span class="pill warn">Təkrar</span>'; main = r.name; sub = `${r.cls} sinif · artıq qeyd olunub`; }
+    else if (r.kind === 'unknown') { pill = '<span class="pill stop">Tanınmadı</span>'; main = 'Kart ' + fmtCode(r.code); sub = 'siyahıda yoxdur'; }
+    else { pill = '<span class="pill stop">Yad QR</span>'; main = '—'; sub = ''; }
+    return `<div class="row"><span class="tm"><b>${hm(r.t)}</b></span>${pill}<div class="row-main"><div class="nm">${esc(main)}</div>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div></div>`;
+  }).join('');
+}
+
+/* offline queue */
+function queueItem(item) {
+  if (!S.outbox.some(x => x.id === item.id)) S.outbox.push(item);
+  saveOutbox(); renderQueue();
+}
+function renderQueue() {
+  const bar = $('#queueBar');
+  setConn(S.conn);
+  if (!S.outbox.length) { bar.hidden = true; return; }
+  bar.hidden = false;
+  bar.innerHTML = `<b>${S.outbox.length} skan göndərilməyib.</b> İnternet gələn kimi özü göndəriləcək. Səhifəni bağlasanız da bu cihazda saxlanır. <button class="btn sm" type="button" data-act="flush">İndi göndər</button>`;
+}
+async function flush() {
+  if (S.flushing || !S.outbox.length || !S.api) return;
+  S.flushing = true; setConn('busy');
+  try {
+    while (S.outbox.length) {
+      const item = S.outbox[0];
+      let r;
+      try { r = await api('scan', item); } catch (e) { setConn('err'); break; }
+      if (r && r.ok === false && (r.error === 'pin' || r.error === 'locked')) { showNotice('<b>Növbədəki skanlar göndərilmir.</b> ' + esc(errText(r.error))); break; }
+      if (r && r.ok === false && r.error === 'busy') { await sleep(2500); continue; }
+      S.outbox.shift(); saveOutbox();
+      const rec = S.recent.find(x => x.id === item.id);
+      if (rec) applyResult(rec, r, false);
+      setConn('ok');
+    }
+  } finally { S.flushing = false; renderQueue(); }
+}
+
+/* ---------- camera ---------- */
+async function startCam() {
+  armAudio();
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { camOff('Kamera bu brauzerdə açılmır', 'Chrome və ya Safari ilə açın, ya da «Şəkil çək» düyməsindən istifadə edin.'); $('#photoBtn').hidden = false; return; }
+  stopCam(true);
+  try {
+    S.stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: S.facing }, width: { ideal: 1280 }, height: { ideal: 720 } } });
+  } catch (e) {
+    const denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
+    camOff(denied ? 'Kameraya icazə verilmədi' : 'Kamera açılmadı', denied ? 'Brauzerin ünvan sətrindəki kilid işarəsinə basıb kameraya icazə verin, sonra yenidən cəhd edin.' : 'Kamera başqa proqramda açıq ola bilər. «Şəkil çək» düyməsi ilə də oxuya bilərsiniz.');
+    $('#photoBtn').hidden = false;
+    return;
+  }
+  const v = $('#video');
+  v.srcObject = S.stream; v.muted = true; v.setAttribute('playsinline', '');
+  try { await v.play(); } catch (e) { /* autoplay blocked: user can tap again */ }
+  $('#stage').classList.add('live');
+  $('#stage').classList.toggle('mirror', S.facing === 'user');
+  store.set('camOn', true);
+  if (!S.detector && 'BarcodeDetector' in window) {
+    try {
+      const f = await window.BarcodeDetector.getSupportedFormats();
+      if (f.includes('qr_code')) S.detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+    } catch (e) { S.detector = null; }
+  }
+  renderCamButtons();
+  if (S.awake) keepAwake(true);
+  const token = ++S.camToken;
+  loop(token);
+}
+function stopCam(silent) {
+  S.camToken++;
+  if (S.stream) { S.stream.getTracks().forEach(t => t.stop()); S.stream = null; }
+  const v = $('#video');
+  v.srcObject = null;
+  $('#stage').classList.remove('live');
+  if (!silent) { store.set('camOn', false); camOff('Kamera bağlıdır', 'Kartları oxumaq üçün kameranı açın. USB və ya Bluetooth QR skaner qoşulubsa, kamera lazım deyil.'); }
+  renderCamButtons();
+}
+function camOff(title, text) {
+  $('#offTitle').textContent = title;
+  $('#offText').textContent = text;
+  renderCamButtons();
+}
+function renderCamButtons() {
+  const on = !!S.stream;
+  $('#camToggle').textContent = on ? 'Kameranı söndür' : 'Kameranı aç';
+  $('#camFlip').textContent = S.facing === 'user' ? 'Arxa kamera' : 'Ön kamera';
+}
+async function loop(token) {
+  const cv = document.createElement('canvas');
+  const g = cv.getContext('2d', { willReadFrequently: true });
+  while (token === S.camToken && S.stream) {
+    const v = $('#video');
+    if (S.tab === 'skaner' && document.visibilityState === 'visible' && v.readyState >= 2 && v.videoWidth) {
+      try {
+        let codes = [];
+        if (S.detector) {
+          const r = await S.detector.detect(v);
+          codes = r.map(x => x.rawValue).filter(Boolean);
+        } else if (typeof window.jsQR === 'function') {
+          const sc = Math.min(1, 800 / Math.max(v.videoWidth, v.videoHeight));
+          cv.width = Math.round(v.videoWidth * sc); cv.height = Math.round(v.videoHeight * sc);
+          g.drawImage(v, 0, 0, cv.width, cv.height);
+          const r = window.jsQR(g.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height, { inversionAttempts: 'dontInvert' });
+          if (r && r.data) codes = [r.data];
+        }
+        codes.forEach(c => onCode(c, 'kamera'));
+      } catch (e) { /* skip this frame */ }
+    }
+    await sleep(S.detector ? 120 : 160);
+  }
+}
+async function decodePhoto(file) {
+  let src;
+  try { src = await createImageBitmap(file); }
+  catch (e) {
+    src = await new Promise((res, rej) => { const u = URL.createObjectURL(file); const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = u; });
+  }
+  const W0 = src.width || src.naturalWidth, H0 = src.height || src.naturalHeight;
+  const cv = document.createElement('canvas'), g = cv.getContext('2d', { willReadFrequently: true });
+  for (const [max, blur] of [[1000, 0], [1400, 1]]) {
+    const sc = Math.min(1, max / Math.max(W0, H0));
+    cv.width = Math.round(W0 * sc); cv.height = Math.round(H0 * sc);
+    g.filter = blur ? `blur(${blur}px)` : 'none';
+    g.drawImage(src, 0, 0, cv.width, cv.height);
+    const r = window.jsQR(g.getImageData(0, 0, cv.width, cv.height).data, cv.width, cv.height, { inversionAttempts: 'dontInvert' });
+    if (r && r.data) return r.data;
+  }
+  return null;
+}
+
+/* keyboard wedge scanners type the 12 digits and press Enter */
+let kb = '', kbT = 0;
+function onKey(e) {
+  if (S.tab !== 'skaner' || e.ctrlKey || e.metaKey || e.altKey) return;
+  const el = e.target;
+  if (el && el.closest && el.closest('input,textarea,select,[contenteditable="true"]')) return;
+  const now = Date.now();
+  if (now - kbT > 700) kb = '';
+  kbT = now;
+  if (e.key === 'Enter' || e.key === 'Tab') {
+    const d = kb.replace(/\D/g, '');
+    kb = '';
+    if (d.length >= 12) { e.preventDefault(); onCode(d.slice(-12), 'skaner'); }
+    return;
+  }
+  if (e.key && e.key.length === 1) kb += e.key;
+}
+
+/* sound and screen */
+let actx = null;
+function armAudio() {
+  if (!S.sound) return;
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    if (!actx) actx = new AC();
+    if (actx.state === 'suspended') actx.resume();
+  } catch (e) { actx = null; }
+}
+function beep(kind) {
+  if (!S.sound || !actx) return;
+  try {
+    const t = actx.currentTime;
+    const tones = { tick: [[1500, 0, .05]], in: [[880, 0, .09], [1320, .11, .14]], out: [[1320, 0, .09], [880, .11, .14]], warn: [[520, 0, .2]], err: [[240, 0, .16], [200, .2, .24]] }[kind] || [];
+    for (const [f, d, len] of tones) {
+      const o = actx.createOscillator(), gn = actx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      gn.gain.setValueAtTime(0.0001, t + d);
+      gn.gain.exponentialRampToValueAtTime(0.3, t + d + 0.015);
+      gn.gain.exponentialRampToValueAtTime(0.0001, t + d + len);
+      o.connect(gn); gn.connect(actx.destination);
+      o.start(t + d); o.stop(t + d + len + 0.03);
+    }
+  } catch (e) { /* no sound */ }
+}
+async function keepAwake(on) {
+  try {
+    if (on && 'wakeLock' in navigator && !S.wl) { S.wl = await navigator.wakeLock.request('screen'); S.wl.addEventListener('release', () => { S.wl = null; }); }
+    else if (!on && S.wl) { await S.wl.release(); S.wl = null; }
+  } catch (e) { S.wl = null; }
+}
+
+/* ---------- manual search ---------- */
+const doSearch = debounce(async () => {
+  const q = $('#mq').value.trim(), box = $('#mres');
+  if (q.length < 2 || !S.api) { box.hidden = true; box.innerHTML = ''; return; }
+  box.hidden = false;
+  box.innerHTML = '<div class="empty">Axtarılır…</div>';
+  try {
+    const r = await api('search', { q }, 15000);
+    if ($('#mq').value.trim() !== q) return;
+    if (!r.ok) { box.innerHTML = `<div class="empty">${esc(errText(r.error, r.message))}</div>`; return; }
+    box.innerHTML = r.list.length ? r.list.map(s => `<div class="row"><div class="row-main"><div class="nm">${esc(s.name)}</div><div class="sub">${esc(s.cls)} sinif</div></div><div class="row-side"><button class="btn sm go" type="button" data-act="man" data-code="${esc(s.code)}" data-t="in">Gəldi</button><button class="btn sm primary" type="button" data-act="man" data-code="${esc(s.code)}" data-t="out">Çıxdı</button></div></div>`).join('') : '<div class="empty">Belə şagird tapılmadı.</div>';
+  } catch (e) { box.innerHTML = `<div class="empty">${esc(errText(e.code))}</div>`; }
+}, 400);
+
+/* ---------- today ---------- */
+async function loadToday() {
+  if (!S.api || S.tLoad) return;
+  S.tLoad = true; renderToday();
+  try {
+    const r = await api('today', null, 30000);
+    if (r.ok) { S.today = r; S.todayErr = ''; } else S.todayErr = errText(r.error, r.message);
+  } catch (e) { S.todayErr = errText(e.code); }
+  S.tLoad = false; renderToday();
+}
+function renderToday() {
+  const t = S.today;
+  $('#tTitle').textContent = t ? `Bu gün · ${t.date}` : 'Bu gün';
+  const box = $('#tList');
+  if (!S.api) { $('#tStats').innerHTML = ''; $('#tChips').innerHTML = ''; box.innerHTML = `<div class="empty">${esc(errText('noapi'))}</div>`; return; }
+  if (!t) { $('#tStats').innerHTML = ''; $('#tChips').innerHTML = ''; box.innerHTML = `<div class="empty">${S.tLoad ? 'Yüklənir…' : esc(S.todayErr || '')}</div>`; return; }
+  const classes = Array.from(new Set(t.list.map(s => s.cls))).sort(collator.compare);
+  const sel = $('#tCls'), keep = S.tCls;
+  const sig = classes.join('|');
+  if (sel.dataset.sig !== sig) { sel.innerHTML = '<option value="">Bütün siniflər</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join(''); sel.dataset.sig = sig; }
+  if (!classes.includes(keep)) S.tCls = '';
+  sel.value = S.tCls;
+  const scope = t.list.filter(s => !S.tCls || s.cls === S.tCls);
+  const c = { inside: 0, left: 0, absent: 0 };
+  scope.forEach(s => { c[s.st]++; });
+  $('#tStats').innerHTML = `<div class="stats"><div class="stat go"><b>${c.inside}</b><span>Məktəbdə</span></div><div class="stat out"><b>${c.left}</b><span>Çıxıb</span></div><div class="stat no"><b>${c.absent}</b><span>Gəlməyib</span></div><div class="stat"><b>${scope.length}</b><span>Cəmi şagird</span></div></div>` + (S.todayErr ? `<p class="hint warn-txt">${esc(S.todayErr)}</p>` : '');
+  const chip = (v, l, n) => `<button type="button" class="chip" data-act="t-chip" data-v="${v}" aria-pressed="${S.tSt === v}">${l}<span class="n">${n}</span></button>`;
+  $('#tChips').innerHTML = chip('all', 'Hamısı', scope.length) + chip('inside', 'Məktəbdə', c.inside) + chip('left', 'Çıxıb', c.left) + chip('absent', 'Gəlməyib', c.absent);
+  const q = fold(S.tQ.trim());
+  const rows = scope.filter(s => (S.tSt === 'all' || s.st === S.tSt) && (!q || fold(s.name).includes(q))).sort(byClsName);
+  if (!rows.length) { box.innerHTML = '<div class="empty">Bu seçimə uyğun şagird yoxdur.</div>'; return; }
+  let html = '', cur = null;
+  for (const s of rows) {
+    if (s.cls !== cur) { cur = s.cls; html += `<div class="grp"><b>${esc(cur || 'Sinifsiz')}</b></div>`; }
+    const pill = s.st === 'inside' ? '<span class="pill in">Məktəbdə</span>' : s.st === 'left' ? '<span class="pill out">Çıxıb</span>' : '<span class="pill no">Gəlməyib</span>';
+    html += `<div class="row"><div class="row-main"><div class="nm">${esc(s.name)}</div></div><div class="row-side"><span class="tm">Gəliş <b>${esc(s.in || '—')}</b></span><span class="tm">Çıxış <b>${esc(s.out || '—')}</b></span>${pill}</div></div>`;
+  }
+  box.innerHTML = html;
+}
+
+/* ---------- cards ---------- */
+const libP = {};
+function need(globalName, url) {
+  if (window[globalName]) return Promise.resolve(window[globalName]);
+  if (!libP[url]) libP[url] = new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = url; s.async = true;
+    s.onload = () => (window[globalName] ? res(window[globalName]) : rej(new Error('load')));
+    s.onerror = () => { delete libP[url]; rej(new Error('load')); };
+    document.head.appendChild(s);
+  });
+  return libP[url];
+}
+const MMPX = 300 / 25.4;
+const CARD = { w: 85.6, h: 54, qx: 5.5, qy: 6, qs: 30 };
+const PRINT = { ink: '#131A36', muted: '#58617E', accent: '#2B3FC4', line: '#C3CAD9' };
+let fontsP = null;
+function fontsReady() {
+  if (!document.fonts || !document.fonts.load) return Promise.resolve();
+  if (!fontsP) {
+    const sample = 'ƏəŞşĞğİıÇçÖöÜü Aa 0123456789';
+    fontsP = Promise.all([
+      document.fonts.load('700 40px "Unbounded"', sample), document.fonts.load('600 30px "Onest"', sample),
+      document.fonts.load('700 30px "Onest"', sample), document.fonts.load('500 30px "Martian Mono"', sample)
+    ]).catch(() => null);
+  }
+  return Promise.race([fontsP, sleep(3500)]);
+}
+function qrMatrix(code) {
+  const q = window.qrcode(0, 'H');
+  q.addData(code, 'Numeric'); q.make();
+  const n = q.getModuleCount(), m = [];
+  for (let r = 0; r < n; r++) { const row = []; for (let c = 0; c < n; c++) row.push(q.isDark(r, c)); m.push(row); }
+  return m;
+}
+function drawQr(g, code, x, y, size) {
+  const m = qrMatrix(code), n = m.length, s = size / n;
+  g.fillStyle = '#000000';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (m[r][c]) {
+    const x0 = Math.round(x + c * s), y0 = Math.round(y + r * s);
+    g.fillRect(x0, y0, Math.round(x + (c + 1) * s) - x0, Math.round(y + (r + 1) * s) - y0);
+  }
+}
+function qrPdf(pdf, code, x, y, size) {
+  const m = qrMatrix(code), n = m.length, s = size / n;
+  pdf.setFillColor(0, 0, 0);
+  for (let r = 0; r < n; r++) {
+    let c = 0;
+    while (c < n) {
+      if (!m[r][c]) { c++; continue; }
+      let e = c;
+      while (e < n && m[r][e]) e++;
+      pdf.rect(x + c * s, y + r * s, (e - c) * s, s + 0.02, 'F');
+      c = e;
+    }
+  }
+}
+function wrapWords(g, text, maxW) {
+  const words = String(text).split(/\s+/).filter(Boolean), lines = [];
+  let cur = '';
+  for (const w of words) { const t = cur ? cur + ' ' + w : w; if (!cur || g.measureText(t).width <= maxW) cur = t; else { lines.push(cur); cur = w; } }
+  if (cur) lines.push(cur);
+  return lines;
+}
+function fitText(g, text, maxW, maxLines, sizes, weight, family) {
+  for (const px of sizes) {
+    g.font = `${weight} ${px}px ${family}`;
+    const lines = wrapWords(g, text, maxW);
+    if (lines.length <= maxLines && lines.every(l => g.measureText(l).width <= maxW)) return { lines, px };
+  }
+  const px = sizes[sizes.length - 1];
+  g.font = `${weight} ${px}px ${family}`;
+  const lines = wrapWords(g, text, maxW).slice(0, maxLines).map(l => {
+    if (g.measureText(l).width <= maxW) return l;
+    let s = l;
+    while (s.length > 1 && g.measureText(s + '…').width > maxW) s = s.slice(0, -1);
+    return s + '…';
+  });
+  return { lines, px };
+}
+function rrect(g, x, y, w, h, r) {
+  g.beginPath(); g.moveTo(x + r, y); g.lineTo(x + w - r, y); g.quadraticCurveTo(x + w, y, x + w, y + r);
+  g.lineTo(x + w, y + h - r); g.quadraticCurveTo(x + w, y + h, x + w - r, y + h); g.lineTo(x + r, y + h);
+  g.quadraticCurveTo(x, y + h, x, y + h - r); g.lineTo(x, y + r); g.quadraticCurveTo(x, y, x + r, y); g.closePath();
+}
+function drawMark(g, x, y, s) {
+  g.fillStyle = PRINT.accent; rrect(g, x, y, s, s, s * 0.27); g.fill();
+  g.strokeStyle = '#FFFFFF'; g.lineWidth = s * 0.087; rrect(g, x + s * 0.243, y + s * 0.243, s * 0.513, s * 0.513, s * 0.12); g.stroke();
+  g.fillStyle = '#FFFFFF'; rrect(g, x + s * 0.4, y + s * 0.4, s * 0.2, s * 0.2, s * 0.05); g.fill();
+}
+function drawCard(st, opt) {
+  opt = opt || {};
+  const sc = (opt.scale || 1) * MMPX, X = mm => mm * sc;
+  const cv = document.createElement('canvas');
+  cv.width = Math.round(CARD.w * sc); cv.height = Math.round(CARD.h * sc);
+  const g = cv.getContext('2d');
+  g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, cv.width, cv.height);
+  if (opt.border) { g.strokeStyle = PRINT.line; g.lineWidth = X(0.3); rrect(g, X(0.15), X(0.15), cv.width - X(0.3), cv.height - X(0.3), X(3)); g.stroke(); }
+  if (opt.qr !== false) drawQr(g, st.code, X(CARD.qx), X(CARD.qy), X(CARD.qs));
+  g.textBaseline = 'alphabetic';
+  g.fillStyle = PRINT.ink; g.textAlign = 'center';
+  g.font = `500 ${X(2.45)}px "Martian Mono", ui-monospace, Menlo, monospace`;
+  g.fillText(fmtCode(st.code), X(CARD.qx + CARD.qs / 2), X(41.5));
+  g.textAlign = 'left';
+  const RX = X(41), RW = X(85.6 - 41 - 4.5);
+  drawMark(g, RX, X(5.6), X(4.4));
+  g.fillStyle = PRINT.muted; g.font = `600 ${X(2.3)}px Onest, system-ui, sans-serif`;
+  const school = wrapWords(g, S.rosterSchool || 'Məktəb', RW - X(6)).slice(0, 2);
+  school.forEach((l, i) => g.fillText(l, RX + X(6), X(8.6) + i * X(2.9)));
+  const fam = '"Unbounded", Onest, system-ui, sans-serif';
+  const fit = fitText(g, st.name, RW, 3, [4.8, 4.3, 3.9, 3.5, 3.15, 2.85].map(X), 700, fam);
+  g.fillStyle = PRINT.ink; g.font = `700 ${fit.px}px ${fam}`;
+  let y = X(school.length > 1 ? 20.4 : 18.8);
+  for (const l of fit.lines) { g.fillText(l, RX, y); y += fit.px * 1.2; }
+  g.font = `700 ${X(3.5)}px Onest, system-ui, sans-serif`;
+  g.fillText(`${st.cls} sinif`, RX, X(41.5));
+  g.fillStyle = PRINT.accent; g.font = `700 ${X(2)}px Onest, system-ui, sans-serif`;
+  let cx = RX;
+  for (const ch of 'GİRİŞ-ÇIXIŞ KARTI') { g.fillText(ch, cx, X(48)); cx += g.measureText(ch).width + X(0.32); }
+  return cv;
+}
+const cardList = () => (S.roster || []).filter(s => !S.kCls || s.cls === S.kCls).sort(byClsName);
+async function loadRoster(pin) {
+  const msg = $('#kMsg');
+  if (!S.api) { msg.textContent = errText('noapi'); return; }
+  msg.textContent = 'Siyahı yüklənir…';
+  try {
+    const r = await api('roster', { admin: pin }, 40000);
+    if (!r.ok) { msg.textContent = r.error === 'pin' ? 'Admin PIN-i səhvdir.' : errText(r.error, r.message); return; }
+    S.roster = r.list; S.rosterSchool = r.school || ''; S.kSig = '';
+    try { sessionStorage.setItem('mgj.admin', pin); } catch (e) { /* ignore */ }
+    msg.textContent = '';
+    renderCards();
+  } catch (e) { msg.textContent = errText(e.code); }
+}
+function renderCards() {
+  const has = !!S.roster;
+  $('#kForm').hidden = has; $('#kTools').hidden = !has;
+  if (!has) { $('#kPrev').innerHTML = ''; return; }
+  const classes = Array.from(new Set(S.roster.map(s => s.cls))).sort(collator.compare);
+  const sel = $('#kCls');
+  if (sel.dataset.sig !== classes.join('|')) { sel.innerHTML = '<option value="">Bütün siniflər</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join(''); sel.dataset.sig = classes.join('|'); }
+  if (!classes.includes(S.kCls)) S.kCls = '';
+  sel.value = S.kCls;
+  const list = cardList();
+  if (!$('#kMsg').dataset.keep) $('#kMsg').textContent = list.length ? `${list.length} kart, ${Math.ceil(list.length / 10)} vərəq A4.` : 'Siyahıda şagird yoxdur.';
+  $('#kPdf').disabled = !list.length;
+  previewCards(list);
+}
+async function previewCards(list) {
+  const pick = list.slice(0, 4);
+  const sig = pick.map(s => s.code + s.name + s.cls).join('|') + S.rosterSchool + list.length;
+  if (sig === S.kSig) return;
+  S.kSig = sig;
+  await fontsReady();
+  if (S.kSig !== sig) return;
+  $('#kPrev').innerHTML = pick.map(st => `<figure><img alt="${esc(st.name)} üçün QR kart" src="${drawCard(st, { qr: true, scale: 0.55, border: true }).toDataURL('image/png')}" width="514" height="324"><figcaption>${esc(st.name)} · ${esc(st.cls)}</figcaption></figure>`).join('') + (list.length > 4 ? `<p class="hint">və daha ${list.length - 4} kart PDF-də</p>` : '');
+}
+async function makePdf() {
+  const list = cardList();
+  if (!list.length) return;
+  const msg = $('#kMsg'), btn = $('#kPdf'), prog = $('#kProg'), bar = prog.firstElementChild;
+  btn.disabled = true; prog.hidden = false; bar.style.width = '0%';
+  msg.dataset.keep = '1'; msg.textContent = 'PDF hazırlanır…';
+  try {
+    const ns = await need('jspdf', PDF_LIB);
+    await fontsReady();
+    const pdf = new ns.jsPDF({ unit: 'mm', format: 'a4', compress: true });
+    const CW = CARD.w, CH = CARD.h, GX = 4, GY = 2;
+    const mx = (210 - (2 * CW + GX)) / 2, my = (297 - (5 * CH + 4 * GY)) / 2;
+    for (let i = 0; i < list.length; i++) {
+      if (i && i % 10 === 0) pdf.addPage();
+      const slot = i % 10, x = mx + (slot % 2) * (CW + GX), y = my + Math.floor(slot / 2) * (CH + GY);
+      pdf.addImage(drawCard(list[i], { qr: false }).toDataURL('image/jpeg', 0.92), 'JPEG', x, y, CW, CH, undefined, 'FAST');
+      qrPdf(pdf, list[i].code, x + CARD.qx, y + CARD.qy, CARD.qs);
+      pdf.setDrawColor(190, 197, 212); pdf.setLineWidth(0.2); pdf.roundedRect(x, y, CW, CH, 3, 3, 'S');
+      if (i % 4 === 3) { bar.style.width = ((i + 1) / list.length * 100).toFixed(1) + '%'; await sleep(0); }
+    }
+    bar.style.width = '100%';
+    pdf.save('QR kartlar' + (S.kCls ? ' ' + S.kCls : '') + '.pdf');
+    msg.textContent = `${list.length} kart hazırdır (${Math.ceil(list.length / 10)} vərəq). Çapda miqyası 100% saxlayın.`;
+  } catch (e) {
+    msg.textContent = e && e.message === 'load' ? 'PDF proqram hissəsi yüklənmədi. İnternet bağlantısını yoxlayın.' : 'PDF hazırlanmadı. Yenidən cəhd edin.';
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => { prog.hidden = true; }, 900);
+    setTimeout(() => { delete msg.dataset.keep; }, 15000);
+  }
+}
+
+/* ---------- settings ---------- */
+function b64urlEncode(s) { return btoa(unescape(encodeURIComponent(s))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function b64urlDecode(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return decodeURIComponent(escape(atob(s))); }
+function validApi(u) { return /^https:\/\/script\.google(usercontent)?\.com\/.+/.test(u); }
+async function testAndSave(apiUrl, pin, device, fromJoin) {
+  const msg = $('#cfMsg');
+  apiUrl = clean(apiUrl); pin = String(pin || '').replace(/\D/g, ''); device = clean(device).slice(0, 40);
+  if (!validApi(apiUrl)) { msg.textContent = 'Ünvan https://script.google.com/macros/s/…/exec kimi olmalıdır.'; return false; }
+  if (pin.length < 6) { msg.textContent = 'PIN ən azı 6 rəqəmdir.'; return false; }
+  msg.textContent = 'Yoxlanılır…';
+  $('#cfSave').disabled = true;
+  const prev = { api: S.api, pin: S.pin };
+  S.api = apiUrl; S.pin = pin;
+  try {
+    const r = await api('ping', null, 30000);
+    if (!r.ok) { S.api = prev.api; S.pin = prev.pin; msg.textContent = errText(r.error, r.message); return false; }
+    S.device = device; S.school = r.school || ''; S.info = r;
+    store.set('api', S.api); store.set('pin', S.pin); store.set('device', S.device); store.set('school', S.school); store.set('info', r);
+    msg.textContent = `Qoşuldu: ${r.school || 'məktəb'} · ${r.students} şagird · WhatsApp: ${r.whatsapp ? 'avtomatik' : 'əl ilə'}`;
+    showNotice('');
+    setConn('ok'); renderHeader(); renderSettings();
+    if (fromJoin) { toast('Cihaz qoşuldu'); setTab('skaner'); }
+    flush();
+    return true;
+  } catch (e) {
+    S.api = prev.api; S.pin = prev.pin;
+    msg.textContent = errText(e.code);
+    return false;
+  } finally { $('#cfSave').disabled = false; }
+}
+function renderSettings() {
+  if (document.activeElement && document.activeElement.closest && document.activeElement.closest('#cfg')) return;
+  $('#cfApi').value = S.api; $('#cfPin').value = S.pin; $('#cfDev').value = S.device;
+  $('#joinPanel').hidden = !S.api;
+  $('#optSound').checked = S.sound; $('#optAwake').checked = S.awake; $('#optAuto').checked = S.camAuto;
+}
+function showJoin() {
+  const box = $('#joinBox');
+  const link = `${location.origin}${location.pathname}#qos=${b64urlEncode(JSON.stringify({ a: S.api, p: S.pin }))}`;
+  const q = window.qrcode(0, 'M');
+  q.addData(link, 'Byte'); q.make();
+  const n = q.getModuleCount(), cell = Math.max(3, Math.floor(260 / (n + 8)));
+  const cv = document.createElement('canvas');
+  cv.width = cv.height = (n + 8) * cell;
+  const g = cv.getContext('2d');
+  g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, cv.width, cv.height); g.fillStyle = '#000000';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) g.fillRect((c + 4) * cell, (r + 4) * cell, cell, cell);
+  box.innerHTML = '';
+  box.appendChild(cv);
+  const p = document.createElement('p');
+  p.className = 'hint';
+  p.textContent = 'İkinci cihazda kamera tətbiqi ilə oxudun və açılan linkə keçin.';
+  box.appendChild(p);
+  box.hidden = false;
+}
+function readJoin() {
+  const h = location.hash || '';
+  if (!h.startsWith('#qos=')) return false;
+  let o = null;
+  try { o = JSON.parse(b64urlDecode(h.slice(5))); } catch (e) { o = null; }
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ignore */ }
+  if (!o || !o.a || !o.p) return false;
+  setTab('ayarlar');
+  $('#cfApi').value = o.a; $('#cfPin').value = o.p;
+  testAndSave(o.a, o.p, $('#cfDev').value || '', true);
+  return true;
+}
+
+/* ---------- shell ---------- */
+function toast(t) {
+  const el = $('#toast');
+  el.textContent = t; el.hidden = false;
+  clearTimeout(S.toastT);
+  S.toastT = setTimeout(() => { el.hidden = true; }, 3200);
+}
+function renderHeader() {
+  $('#schoolName').textContent = S.school ? S.school + (S.device ? ' · ' + S.device : '') : (S.device || 'Skaner');
+}
+function setTab(t) {
+  if (!TABS.includes(t)) t = 'skaner';
+  S.tab = t;
+  $$('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+  $$('.view').forEach(v => { v.hidden = v.id !== 'v-' + t; });
+  store.set('tab', t);
+  if (t === 'bugun') { renderToday(); if (!S.today || Date.now() - (S.todayAt || 0) > 20000) { S.todayAt = Date.now(); loadToday(); } }
+  if (t === 'kartlar') renderCards();
+  if (t === 'ayarlar') renderSettings();
+}
+function tick() {
+  const d = new Date();
+  $('#clock').textContent = `${pad(d.getHours())}:${pad(d.getMinutes())} · ${d.getDate()} ${MONTHS[d.getMonth()]}, ${WEEK[d.getDay()]}`;
+  const r = store.get('recent', null);
+  if (r && r.day !== dayKey()) { S.recent = []; saveRecent(); renderRecent(); }
+}
+function onClick(e) {
+  const t = e.target.closest('[data-act]');
+  if (!t) return;
+  switch (t.dataset.act) {
+    case 'tab': setTab(t.dataset.tab); break;
+    case 'cam-start': startCam(); break;
+    case 'cam-toggle': if (S.stream) stopCam(); else startCam(); break;
+    case 'cam-flip': S.facing = S.facing === 'user' ? 'environment' : 'user'; store.set('facing', S.facing); renderCamButtons(); if (S.stream) startCam(); break;
+    case 'mode': S.mode = t.dataset.m; store.set('mode', S.mode); $$('#modeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === S.mode))); break;
+    case 'man': armAudio(); submit({ id: uid(), code: t.dataset.code, t: Date.now(), mode: S.mode, force: t.dataset.t, via: 'man', device: S.device || 'Skaner' }); $('#mq').value = ''; $('#mres').hidden = true; window.scrollTo(0, 0); break;
+    case 'cancel-ask': S.confirmCancel = true; renderLast(); break;
+    case 'cancel-no': S.confirmCancel = false; renderLast(); break;
+    case 'cancel-yes': cancelLast(); break;
+    case 'flush': flush(); break;
+    case 'today-refresh': S.todayAt = Date.now(); loadToday(); break;
+    case 't-chip': S.tSt = t.dataset.v; renderToday(); break;
+    case 'k-pdf': makePdf(); break;
+    case 'k-reload': { let p = ''; try { p = sessionStorage.getItem('mgj.admin') || ''; } catch (x) { p = ''; } if (p) loadRoster(p); else { S.roster = null; renderCards(); } break; }
+    case 'join-show': showJoin(); break;
+    case 'forget': $('#forgetBox').innerHTML = `<span class="hint">Əminsiniz?${S.outbox.length ? ` Göndərilməmiş ${S.outbox.length} skan da silinəcək.` : ''}</span><button class="btn sm danger" type="button" data-act="forget-yes">Bəli, ayır</button><button class="btn sm ghost" type="button" data-act="forget-no">Xeyr</button>`; break;
+    case 'forget-no': $('#forgetBox').innerHTML = '<button class="btn danger" type="button" data-act="forget">Bu cihazı ayır</button>'; break;
+    case 'forget-yes':
+      ['api', 'pin', 'school', 'info', 'outbox', 'recent'].forEach(k => store.del(k));
+      S.api = ''; S.pin = ''; S.school = ''; S.info = null; S.outbox = []; S.recent = []; S.last = null;
+      $('#forgetBox').innerHTML = '<button class="btn danger" type="button" data-act="forget">Bu cihazı ayır</button>';
+      stopCam(); renderAll(); toast('Cihaz ayrıldı');
+      break;
+  }
+}
+function renderAll() {
+  renderHeader(); renderRecent(); renderLast(); renderQueue(); renderCamButtons(); renderSettings(); setConn(S.conn);
+  $$('#modeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === S.mode)));
+}
+function bind() {
+  document.addEventListener('click', onClick);
+  document.addEventListener('keydown', onKey);
+  $('#photo').addEventListener('change', async e => {
+    const f = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!f) return;
+    overlay('wait', '<div class="spin" aria-hidden="true"></div>' + W('OXUNUR'), 0);
+    let code = null;
+    try { code = await decodePhoto(f); } catch (x) { code = null; }
+    if (code) onCode(code, 'foto'); else { overlay('err', W('QR TAPILMADI') + M('Kartı yaxından, işıqlı yerdə çəkin.'), 4000); beep('err'); }
+  });
+  $('#photoBtn').addEventListener('click', armAudio);
+  $('#mq').addEventListener('input', doSearch);
+  $('#tCls').addEventListener('change', e => { S.tCls = e.target.value; renderToday(); });
+  $('#tQ').addEventListener('input', e => { S.tQ = e.target.value; renderToday(); });
+  $('#kCls').addEventListener('change', e => { S.kCls = e.target.value; renderCards(); });
+  $('#kForm').addEventListener('submit', e => { e.preventDefault(); loadRoster($('#kPin').value.replace(/\D/g, '')); });
+  $('#cfg').addEventListener('submit', e => { e.preventDefault(); testAndSave($('#cfApi').value, $('#cfPin').value, $('#cfDev').value, false); });
+  $('#cfDev').addEventListener('change', e => { S.device = clean(e.target.value).slice(0, 40); store.set('device', S.device); renderHeader(); });
+  $('#optSound').addEventListener('change', e => { S.sound = e.target.checked; store.set('sound', S.sound); if (S.sound) armAudio(); });
+  $('#optAwake').addEventListener('change', e => { S.awake = e.target.checked; store.set('awake', S.awake); keepAwake(S.awake && !!S.stream); });
+  $('#optAuto').addEventListener('change', e => { S.camAuto = e.target.checked; store.set('camAuto', S.camAuto); });
+  window.addEventListener('online', flush);
+  window.addEventListener('hashchange', readJoin);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (S.awake && S.stream && !S.wl) keepAwake(true);
+    flush();
+    if (S.tab === 'bugun' && Date.now() - (S.todayAt || 0) > 20000) { S.todayAt = Date.now(); loadToday(); }
+  });
+}
+async function init() {
+  bind();
+  renderAll();
+  tick();
+  setInterval(tick, 15000);
+  setInterval(flush, 10000);
+  setInterval(() => { if (S.tab === 'bugun' && document.visibilityState === 'visible') { S.todayAt = Date.now(); loadToday(); } }, 60000);
+  if (readJoin()) return;
+  if (!S.api) {
+    setTab('ayarlar');
+    showNotice('<b>Xoş gəldiniz.</b> Bu cihazı Google cədvəlinizə qoşmaq üçün aşağıda Web app ünvanını və skaner PIN-ini yazın.');
+    return;
+  }
+  const saved = store.get('tab', 'skaner');
+  setTab(TABS.includes(saved) ? saved : 'skaner');
+  try {
+    const r = await api('ping', null, 30000);
+    if (r.ok) { S.school = r.school || ''; S.info = r; store.set('school', S.school); store.set('info', r); setConn('ok'); }
+    else { setConn('err'); showNotice('<b>Cədvələ qoşulmaq alınmadı.</b> ' + esc(errText(r.error, r.message))); }
+  } catch (e) { setConn('err'); }
+  renderHeader();
+  flush();
+  if (S.camAuto && store.get('camOn', false)) {
+    let granted = false;
+    try { const p = await navigator.permissions.query({ name: 'camera' }); granted = p.state === 'granted'; } catch (e) { granted = false; }
+    if (granted) startCam();
+  }
+}
+if (window.__MGJ_TEST__) window.__MGJ = { S, onCode, drawCard, codeOk, startCam, stopCam };
+init();
+})();
+</script>
+</body>
+</html>
