@@ -70,6 +70,7 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .tab{appearance:none;background:none;border:0;border-bottom:2.5px solid transparent;padding:10px 8px;margin-bottom:-1px;font-weight:600;font-size:14px;color:var(--muted);white-space:nowrap;cursor:pointer;display:flex;align-items:center;gap:6px}
 .tab:hover{color:var(--ink)}
 .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+@media (max-width:400px){.tab{padding:10px 6px;font-size:13.5px;gap:4px}}
 .count{font-family:var(--f-mono);font-size:11px;font-weight:600;min-width:20px;height:19px;padding:0 6px;border-radius:10px;background:var(--warn);color:var(--on-warn);display:inline-grid;place-items:center}
 
 /* layout */
@@ -183,6 +184,22 @@ main{padding-block:16px 72px}
 .pill.no{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
 .pill.warn{background:var(--warn-soft);color:var(--warn)}
 .pill.stop{background:var(--stop-soft);color:var(--stop)}
+.stat.warn b{color:var(--warn)}
+.grp span{font-size:12.5px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+#nBody{display:grid;gap:16px;min-width:0}
+#waSeg{justify-self:start;flex-wrap:wrap}
+.panel.next{border:2px solid var(--go);box-shadow:var(--shadow)}
+.sub .mono{white-space:nowrap}
+.phone-form{display:flex;align-items:center;gap:8px;flex:1 1 280px;justify-content:flex-end;min-width:0;margin:0}
+.phone-form .inp{min-height:38px;padding:6px 10px;flex:1 1 160px;max-width:220px;font-size:16px}
+.phone-form .inp::placeholder{font-family:var(--f-body);font-size:15px;color:var(--muted);opacity:.75}
+.phone-form .inp[aria-invalid="true"]{border-color:var(--warn);box-shadow:0 0 0 3px var(--warn-soft)}
+.phone-form .btn{flex:none}
+.row .perr{flex-basis:100%;font-size:13px;text-align:right}
+@media (max-width:480px){.phone-form{flex-basis:100%}.phone-form .inp{max-width:none}.row .perr{text-align:left}}
+.msgbox{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.45}
+.notice .acts{margin-top:8px}
+.empty .acts{justify-content:center;margin-top:8px}
 .empty{padding:26px 18px;text-align:center;color:var(--muted);display:grid;gap:4px;justify-items:center}
 .empty b{color:var(--ink);font-family:var(--f-display);font-weight:500;font-size:15px}
 .prog{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
@@ -212,6 +229,7 @@ main{padding-block:16px 72px}
       <nav class="tabs" role="tablist" aria-label="Bölmələr">
         <button class="tab" type="button" role="tab" data-act="tab" data-tab="skaner" aria-selected="true">Skaner <span class="count" id="qCount" hidden>0</span></button>
         <button class="tab" type="button" role="tab" data-act="tab" data-tab="bugun" aria-selected="false">Bu gün</button>
+        <button class="tab" type="button" role="tab" data-act="tab" data-tab="xeber" aria-selected="false">Bildirişlər <span class="count" id="nCount" hidden>0</span></button>
         <button class="tab" type="button" role="tab" data-act="tab" data-tab="kartlar" aria-selected="false">Kartlar</button>
         <button class="tab" type="button" role="tab" data-act="tab" data-tab="ayarlar" aria-selected="false">Ayarlar</button>
       </nav>
@@ -259,8 +277,12 @@ main{padding-block:16px 72px}
     </section>
 
     <section class="view" id="v-bugun" aria-label="Bu gün" hidden>
-      <div class="head"><h2 class="sec" id="tTitle">Bu gün</h2><button class="btn sm" type="button" data-act="today-refresh">Yenilə</button></div>
+      <div class="head"><h2 class="sec" id="tTitle">Bu gün</h2><div class="acts"><span class="hint" id="tUpd"></span><button class="btn sm" type="button" data-act="today-refresh">Yenilə</button></div></div>
       <div id="tStats"></div>
+      <div class="block" id="tFeedBox" hidden>
+        <div class="head"><h2 class="sec">Son hərəkətlər</h2><span class="hint">hər 30 saniyədən bir yenilənir</span></div>
+        <div class="list" id="tFeed"></div>
+      </div>
       <div class="filters">
         <label class="field"><span>Sinif</span><select class="inp" id="tCls"><option value="">Bütün siniflər</option></select></label>
         <label class="field grow"><span>Axtarış</span><input class="inp" id="tQ" type="search" placeholder="Şagirdin adı" autocomplete="off"></label>
@@ -268,6 +290,21 @@ main{padding-block:16px 72px}
       <div class="chips" id="tChips" role="group" aria-label="Vəziyyət"></div>
       <div class="list" id="tList"></div>
       <p class="hint">Eyni məlumat Google cədvəlində «Bu gün» vərəqindədir.</p>
+    </section>
+
+    <section class="view" id="v-xeber" aria-label="Bildirişlər" hidden>
+      <div class="head"><h2 class="sec" id="nTitle">Gəlməyənlərin valideynlərinə xəbər</h2><div class="acts"><span class="hint" id="nUpd"></span><button class="btn sm" type="button" data-act="n-refresh">Yenilə</button></div></div>
+      <div id="nBody"></div>
+      <div class="panel" id="nOpts" hidden>
+        <h2 class="sec">WhatsApp harada açılsın</h2>
+        <div class="seg" id="waSeg" role="group" aria-label="WhatsApp">
+          <button type="button" data-act="n-wa" data-m="app" aria-pressed="true">Telefonda</button>
+          <button type="button" data-act="n-wa" data-m="web" aria-pressed="false">WhatsApp Web</button>
+          <button type="button" data-act="n-wa" data-m="desk" aria-pressed="false">Kompüter proqramı</button>
+        </div>
+        <p class="hint">«Telefonda» WhatsApp tətbiqini açır. «WhatsApp Web» söhbəti brauzerin ayrıca vərəqində açır: mesajı göndərin, həmin vərəqi bağlayın və bu səhifəyə qayıdın. Kompüterdə WhatsApp proqramı quraşdırılıbsa, «Kompüter proqramı» daha sürətlidir.</p>
+      </div>
+      <p class="hint">Hər xəbər «Jurnal»a yazılır və cədvəlin «Bu gün» vərəqində görünür. Valideynlərdən məktəbin nömrəsini telefonlarında yadda saxlamalarını xahiş edin: bu, nömrənin bloklanma riskini azaldır.</p>
     </section>
 
     <section class="view" id="v-kartlar" aria-label="Kartlar" hidden>
@@ -333,7 +370,9 @@ main{padding-block:16px 72px}
 const PDF_LIB = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
 const MONTHS = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avqust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'];
 const WEEK = ['bazar', 'bazar ertəsi', 'çərşənbə axşamı', 'çərşənbə', 'cümə axşamı', 'cümə', 'şənbə'];
-const TABS = ['skaner', 'bugun', 'kartlar', 'ayarlar'];
+const TABS = ['skaner', 'bugun', 'xeber', 'kartlar', 'ayarlar'];
+const NEED_VER = '1.1';
+const PHONE_VER = '1.2'; // «Bildirişlər»dən valideyn nömrəsi yazmaq
 
 /* ---------- helpers ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -373,6 +412,16 @@ function fold(s) {
 }
 const collator = (() => { try { return new Intl.Collator('az', { numeric: true, sensitivity: 'base' }); } catch (e) { return new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }); } })();
 const byClsName = (a, b) => collator.compare(a.cls, b.cls) || collator.compare(a.name, b.name);
+/* «08:45-də», «09:00-da»: şəkilçi saatın sonuncu oxunan sözünə uyğunlaşır */
+function sfx(hhmm, back, front) {
+  const p = String(hhmm || '').split(':').map(Number);
+  const n = p[1] || p[0] || 0, u = n % 10, t = Math.floor(n / 10) % 10;
+  const isBack = u ? (u === 6 || u === 9) : t ? (t === 1 || t === 3 || t === 4) : true;
+  return hhmm + (isBack ? back : front);
+}
+const fmtPhone = d => { const s = String(d || ''); const m = s.match(/^994(\d{2})(\d{3})(\d{2})(\d{2})$/); return m ? `+994 ${m[1]} ${m[2]} ${m[3]} ${m[4]}` : (s ? '+' + s : ''); };
+const verGe = (v, need) => { const a = String(v || '0').split('.').map(Number), b = need.split('.').map(Number); for (let i = 0; i < b.length; i++) { const x = a[i] || 0; if (x !== b[i]) return x > b[i]; } return true; };
+const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '') || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent || ''));
 const ICON = {
   send: '<path d="m4 11.8 15.5-7.3-4.6 15-3.4-5.8z"/><path d="m11.5 13.7 8-9.2"/>',
   undo: '<path d="M8.5 6.5 4 11l4.5 4.5"/><path d="M4.5 11H15a4.5 4.5 0 0 1 0 9h-3"/>',
@@ -392,8 +441,15 @@ const S = {
   recent: [], last: null, confirmCancel: false,
   stream: null, camToken: 0, detector: null, seen: new Map(), flushing: false, conn: 'wait',
   tab: 'skaner', today: null, todayErr: '', tLoad: false, tCls: '', tQ: '', tSt: 'all',
+  notif: null, nErr: '', nLoad: false, nAt: 0, nOld: false, nEarly: false, nForce: false, nSkip: new Set(), nLast: null, nLocal: {},
+  nDraft: {}, nPErr: {}, nSaving: new Set(), nSaved: new Map(), nSavedDay: '', nDeferred: false,
+  waMode: ['app', 'web', 'desk'].includes(store.get('waMode', '')) ? store.get('waMode', '') : (isMobile ? 'app' : 'web'),
+  markQ: Array.isArray(store.get('markq', [])) ? store.get('markq', []) : [], marking: false,
   roster: null, rosterSchool: '', kCls: '', kSig: '', wl: null, ovTimer: 0, toastT: 0
 };
+if (S.info && S.info.version && !verGe(S.info.version, NEED_VER)) S.nOld = true;
+// səhifə yenidən açılanda göndərilməmiş xəbər qeydləri yenə «göndərilib» görünsün (ikinci dəfə göndərilməsin)
+S.markQ.forEach(m => { if (m && m.code) S.nLocal[m.code] = { sent: m.sent !== false, at: m.sent !== false ? hm(m.t || Date.now()) : '', ts: m.t || Date.now(), q: true }; });
 (function loadRecent() {
   const r = store.get('recent', null);
   if (r && r.day === dayKey() && Array.isArray(r.items)) S.recent = r.items;
@@ -409,8 +465,11 @@ async function api(action, data, timeoutMs) {
   try {
     const res = await fetch(S.api, { method: 'POST', body: JSON.stringify(Object.assign({ action, pin: S.pin }, data || {})), signal: ctrl.signal, redirect: 'follow', cache: 'no-store' });
     const text = await res.text();
-    try { return JSON.parse(text); }
+    let j;
+    try { j = JSON.parse(text); }
     catch (e) { const er = new Error('notjson'); er.code = 'notjson'; throw er; }
+    if (j && j.ok === true && S.conn === 'err') setConn('ok');
+    return j;
   } catch (e) {
     if (e.code) throw e;
     const er = new Error('net'); er.code = 'net'; throw er;
@@ -424,6 +483,10 @@ function errText(code, msg) {
     net: 'İnternet bağlantısı yoxdur.',
     notjson: 'Cədvəl cavab vermədi. Yerləşdirmədə «Who has access: Anyone» seçildiyini və ünvanın /exec ilə bitdiyini yoxlayın.',
     noapi: 'Bu cihaz hələ cədvələ qoşulmayıb. «Ayarlar» bölməsinə keçin.',
+    unknown_action: 'Cədvəldəki Apps Script kodu köhnədir. Kodu yeniləyin və yeni versiya yerləşdirin.',
+    unknown_student: 'Bu şagird artıq siyahıda yoxdur.',
+    bad_phone: 'Nömrə səhvdir. Nümunə: 050 123 45 67',
+    not_mobile: 'Bu, mobil nömrə deyil. Nümunə: 050 123 45 67',
     server: 'Cədvəldə xəta: ' + (msg || '')
   })[code] || ('Xəta: ' + (msg || code || ''));
 }
@@ -586,6 +649,7 @@ function renderQueue() {
   bar.innerHTML = `<b>${S.outbox.length} skan göndərilməyib.</b> İnternet gələn kimi özü göndəriləcək. Səhifəni bağlasanız da bu cihazda saxlanır. <button class="btn sm" type="button" data-act="flush">İndi göndər</button>`;
 }
 async function flush() {
+  flushMarks();
   if (S.flushing || !S.outbox.length || !S.api) return;
   S.flushing = true; setConn('busy');
   try {
@@ -764,41 +828,306 @@ const doSearch = debounce(async () => {
 /* ---------- today ---------- */
 async function loadToday() {
   if (!S.api || S.tLoad) return;
-  S.tLoad = true; renderToday();
+  S.tLoad = true; S.todayAt = Date.now(); renderToday();
   try {
     const r = await api('today', null, 30000);
-    if (r.ok) { S.today = r; S.todayErr = ''; } else S.todayErr = errText(r.error, r.message);
+    if (r.ok) { S.today = r; S.todayErr = ''; S.todayOkAt = Date.now(); } else S.todayErr = errText(r.error, r.message);
   } catch (e) { S.todayErr = errText(e.code); }
   S.tLoad = false; renderToday();
 }
+const alertTime = a => (String(a || '').match(/\d{1,2}:\d{2}/) || [''])[0];
 function renderToday() {
   const t = S.today;
   $('#tTitle').textContent = t ? `Bu gün · ${t.date}` : 'Bu gün';
+  $('#tUpd').textContent = S.tLoad ? 'Yenilənir…' : S.todayOkAt ? `Yeniləndi: ${hm(S.todayOkAt)}` : '';
   const box = $('#tList');
-  if (!S.api) { $('#tStats').innerHTML = ''; $('#tChips').innerHTML = ''; box.innerHTML = `<div class="empty">${esc(errText('noapi'))}</div>`; return; }
-  if (!t) { $('#tStats').innerHTML = ''; $('#tChips').innerHTML = ''; box.innerHTML = `<div class="empty">${S.tLoad ? 'Yüklənir…' : esc(S.todayErr || '')}</div>`; return; }
+  if (!S.api) { $('#tStats').innerHTML = ''; $('#tChips').innerHTML = ''; $('#tFeedBox').hidden = true; box.innerHTML = `<div class="empty">${esc(errText('noapi'))}</div>`; return; }
+  if (!t) { $('#tStats').innerHTML = ''; $('#tChips').innerHTML = ''; $('#tFeedBox').hidden = true; box.innerHTML = `<div class="empty">${S.tLoad ? 'Yüklənir…' : esc(S.todayErr || '')}</div>`; return; }
   const classes = Array.from(new Set(t.list.map(s => s.cls))).sort(collator.compare);
   const sel = $('#tCls'), keep = S.tCls;
   const sig = classes.join('|');
   if (sel.dataset.sig !== sig) { sel.innerHTML = '<option value="">Bütün siniflər</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join(''); sel.dataset.sig = sig; }
   if (!classes.includes(keep)) S.tCls = '';
   sel.value = S.tCls;
-  const scope = t.list.filter(s => !S.tCls || s.cls === S.tCls);
+  // sınaq kartı yalnız öz sinfi seçiləndə görünür və saylara qatılmır
+  const scope = t.list.filter(s => S.tCls ? s.cls === S.tCls : !s.t);
   const c = { inside: 0, left: 0, absent: 0 };
   scope.forEach(s => { c[s.st]++; });
   $('#tStats').innerHTML = `<div class="stats"><div class="stat go"><b>${c.inside}</b><span>Məktəbdə</span></div><div class="stat out"><b>${c.left}</b><span>Çıxıb</span></div><div class="stat no"><b>${c.absent}</b><span>Gəlməyib</span></div><div class="stat"><b>${scope.length}</b><span>Cəmi şagird</span></div></div>` + (S.todayErr ? `<p class="hint warn-txt">${esc(S.todayErr)}</p>` : '');
+  const feed = Array.isArray(t.feed) ? t.feed.filter(e => !S.tCls || e.cls === S.tCls).slice(0, 6) : [];
+  $('#tFeedBox').hidden = !Array.isArray(t.feed);
+  $('#tFeed').innerHTML = feed.length ? feed.map(e => `<div class="row"><span class="tm"><b>${esc(e.time)}</b></span>${e.type === 'in' ? '<span class="pill in">Gəldi</span>' : '<span class="pill out">Çıxdı</span>'}<div class="row-main"><div class="nm">${esc(e.name)}</div><div class="sub">${esc(e.cls)} sinif</div></div></div>`).join('') : '<div class="empty">Bu gün hələ skan yoxdur.</div>';
   const chip = (v, l, n) => `<button type="button" class="chip" data-act="t-chip" data-v="${v}" aria-pressed="${S.tSt === v}">${l}<span class="n">${n}</span></button>`;
   $('#tChips').innerHTML = chip('all', 'Hamısı', scope.length) + chip('inside', 'Məktəbdə', c.inside) + chip('left', 'Çıxıb', c.left) + chip('absent', 'Gəlməyib', c.absent);
+  const per = {};
+  t.list.forEach(s => { const k = per[s.cls] || (per[s.cls] = { came: 0, all: 0 }); k.all++; if (s.st !== 'absent') k.came++; });
   const q = fold(S.tQ.trim());
   const rows = scope.filter(s => (S.tSt === 'all' || s.st === S.tSt) && (!q || fold(s.name).includes(q))).sort(byClsName);
   if (!rows.length) { box.innerHTML = '<div class="empty">Bu seçimə uyğun şagird yoxdur.</div>'; return; }
   let html = '', cur = null;
   for (const s of rows) {
-    if (s.cls !== cur) { cur = s.cls; html += `<div class="grp"><b>${esc(cur || 'Sinifsiz')}</b></div>`; }
+    if (s.cls !== cur) { cur = s.cls; const k = per[cur] || { came: 0, all: 0 }; html += `<div class="grp"><b>${esc(cur || 'Sinifsiz')}</b><span>${k.came} / ${k.all} gəlib</span></div>`; }
     const pill = s.st === 'inside' ? '<span class="pill in">Məktəbdə</span>' : s.st === 'left' ? '<span class="pill out">Çıxıb</span>' : '<span class="pill no">Gəlməyib</span>';
-    html += `<div class="row"><div class="row-main"><div class="nm">${esc(s.name)}</div></div><div class="row-side"><span class="tm">Gəliş <b>${esc(s.in || '—')}</b></span><span class="tm">Çıxış <b>${esc(s.out || '—')}</b></span>${pill}</div></div>`;
+    const at = alertTime(s.alert);
+    const alert = !s.alert ? '' : s.st === 'absent' ? `<span class="pill warn">Xəbər ${esc(at)}</span>` : `<span class="tm">xəbər <b>${esc(at)}</b></span>`;
+    html += `<div class="row"><div class="row-main"><div class="nm">${esc(s.name)}</div></div><div class="row-side"><span class="tm">Gəliş <b>${esc(s.in || '—')}</b></span><span class="tm">Çıxış <b>${esc(s.out || '—')}</b></span>${alert}${pill}</div></div>`;
   }
   box.innerHTML = html;
+}
+
+/* ---------- absence alerts ---------- */
+async function loadNotif() {
+  if (!S.api || S.nLoad || S.nOld) return;
+  S.nLoad = true; S.nAt = Date.now();
+  const started = Date.now();
+  renderNotif();
+  try {
+    const r = await api('notify', null, 30000);
+    if (r && r.ok) {
+      S.notif = r; S.nErr = ''; S.nOkAt = Date.now();
+      // bu sorğu başlayandan sonra basılan və ya hələ göndərilməmiş qeydlər yerli vəziyyəti saxlayır
+      if (!Array.isArray(r.test)) r.test = [];
+      if (!Array.isArray(r.nophone)) r.nophone = [];
+      if (S.nSavedDay !== r.date) { S.nSaved.clear(); S.nSavedDay = r.date; }
+      // bu cihazdan yazılan nömrə köhnə cavabla itməsin (sorğu yazılışdan əvvəl başlaya bilər)
+      S.nSaved.forEach((v, code) => {
+        if (r.nophone.some(x => x.code === code)) {
+          r.nophone = r.nophone.filter(x => x.code !== code);
+          if (!r.list.some(x => x.code === code)) { r.list.push(v.item); r.list.sort(sira); }
+        }
+      });
+      r.list.concat(r.test).forEach(it => { const l = S.nLocal[it.code]; if (l && (l.q || l.ts >= started)) { it.sent = l.sent; it.at = l.at; it.q = l.q; } });
+    } else if (r && r.error === 'unknown_action') { S.nOld = true; S.notif = null; }
+    else S.nErr = errText(r && r.error, r && r.message);
+  } catch (e) { S.nErr = errText(e.code); }
+  S.nLoad = false; renderNotif();
+}
+const findItem = code => (S.notif ? S.notif.list.concat(S.notif.test || []) : []).find(x => x.code === code) || null;
+// serverdəki kimi: əvvəl sinif, sonra ad
+function sira(a, b) {
+  try { return a.cls.localeCompare(b.cls, 'az', { numeric: true }) || a.name.localeCompare(b.name, 'az'); }
+  catch (e) { return a.cls < b.cls ? -1 : a.cls > b.cls ? 1 : a.name < b.name ? -1 : a.name > b.name ? 1 : 0; }
+}
+// serverdəki telefon_ ilə eyni qayda: 050 123 45 67 → 994501234567
+function phoneDigits(v) {
+  const s = String(v == null ? '' : v).trim();
+  if (!s) return '';
+  const plus = s.charAt(0) === '+';
+  let d = s.replace(/\D/g, '');
+  if (!d) return '';
+  if (!plus) {
+    if (d.indexOf('00') === 0) d = d.slice(2);
+    else if (d.length === 9) d = '994' + d;
+    else if (d.length === 10 && d.charAt(0) === '0') d = '994' + d.slice(1);
+  }
+  if (/^994\d{9}$/.test(d)) return d;
+  if (/^\d{10,15}$/.test(d) && d.indexOf('994') !== 0) return d;
+  return '';
+}
+// serverdəki mobil_ ilə eyni: Azərbaycanda yalnız mobil operator kodları (WhatsApp üçün)
+function phoneProblem(raw) {
+  const d = phoneDigits(raw);
+  if (!d) return 'bad_phone';
+  if (d.indexOf('994') === 0 && !/^994(10|50|51|55|60|70|77|99)\d{7}$/.test(d)) return 'not_mobile';
+  return '';
+}
+async function savePhone(code, raw) {
+  if (S.nSaving.has(code)) return;
+  S.nDraft[code] = raw;
+  const bad = phoneProblem(raw);
+  if (bad) { S.nPErr[code] = errText(bad); renderNotif(true); focusPhone(code); return; }
+  S.nSaving.add(code); delete S.nPErr[code];
+  renderNotif(true);
+  try {
+    const r = await api('setPhone', { code, phone: raw, device: S.device || 'Skaner' }, 30000);
+    if (r && r.ok && r.item) {
+      const it = r.item;
+      S.nSaved.set(code, { ts: Date.now(), item: it });
+      delete S.nDraft[code];
+      if (S.notif) {
+        S.notif.nophone = S.notif.nophone.filter(x => x.code !== code);
+        if (!S.notif.list.some(x => x.code === code)) { S.notif.list.push(it); S.notif.list.sort(sira); }
+      }
+      toast(`Nömrə cədvələ yazıldı: ${r.phone}`);
+    } else if (r && r.error === 'has_phone') {
+      // nömrəni bu arada başqası yazıb: siyahı yenilənir və şagird adi siyahıya keçir
+      const x = S.notif && S.notif.nophone.find(y => y.code === code);
+      delete S.nDraft[code];
+      toast(`${x ? x.name + ': ' : ''}nömrə artıq yazılıb (${r.phone})`);
+      setTimeout(loadNotif, 400);
+    } else if (r && r.error === 'unknown_action') {
+      S.nPErr[code] = 'Bunun üçün cədvəldəki Apps Script kodunu yeniləyin.';
+    } else S.nPErr[code] = errText(r && r.error, r && r.message);
+  } catch (e) { S.nPErr[code] = errText(e.code); }
+  S.nSaving.delete(code);
+  const ae = document.activeElement;
+  if (!S.nPErr[code] && ae && ae.closest && ae.closest(`#nBody .phone-form[data-code="${code}"]`)) ae.blur();
+  renderNotif(true);
+  if (S.nPErr[code] === errText('bad_phone') || S.nPErr[code] === errText('not_mobile')) focusPhone(code);
+}
+function focusPhone(code) {
+  const el = $(`#nBody .phone-form[data-code="${code}"] input`);
+  if (el) { el.focus(); try { el.select(); } catch (e) { /* ignore */ } }
+}
+const refreshNotifSoon = debounce(() => { if (S.tab === 'xeber') loadNotif(); }, 2500);
+function waLink(it) {
+  const tx = encodeURIComponent(it.text || '');
+  if (S.waMode === 'web') return { href: `https://web.whatsapp.com/send?phone=${it.wa}&text=${tx}`, target: 'mgj-whatsapp' };
+  if (S.waMode === 'desk') return { href: `whatsapp://send?phone=${it.wa}&text=${tx}`, target: '' };
+  return { href: `https://wa.me/${it.wa}?text=${tx}`, target: '_blank' };
+}
+function openBtn(it, big) {
+  const l = waLink(it);
+  // WhatsApp Web: adlı vərəq hər dəfə təkrar istifadə olunsun deyə «noopener» qoyulmur
+  return `<a class="btn go${big ? ' big' : ' sm'}" href="${esc(l.href)}"${l.target ? ` target="${l.target}"${l.target === '_blank' ? ' rel="noopener"' : ''}` : ''} data-act="n-open" data-code="${esc(it.code)}">${icon('send')}${big ? 'WhatsApp-da aç' : 'Aç'}</a>`;
+}
+function markAlert(code, sent) {
+  const now = Date.now();
+  const at = sent ? hm(now) : '';
+  S.nLocal[code] = { sent, at, ts: now, q: true };
+  const it = findItem(code);
+  if (it) { it.sent = sent; it.at = at; it.q = true; }
+  S.markQ.push({ code, sent, t: now, device: S.device || 'Skaner' });
+  store.set('markq', S.markQ);
+  flushMarks();
+}
+async function flushMarks() {
+  if (S.marking || !S.markQ.length || !S.api) return;
+  S.marking = true;
+  try {
+    while (S.markQ.length) {
+      const m = S.markQ[0];
+      let r;
+      try { r = await api('notifyMark', m, 30000); } catch (e) { setConn('err'); break; }
+      if (r && r.ok === false && r.error === 'busy') { await sleep(2000); continue; }
+      if (r && r.ok === false && ['pin', 'locked', 'unknown_action'].includes(r.error)) { S.nErr = errText(r.error); if (r.error === 'unknown_action') S.nOld = true; break; }
+      S.markQ.shift(); store.set('markq', S.markQ);
+      const latest = !S.markQ.some(x => x.code === m.code);
+      if (!latest) continue;
+      const it = findItem(m.code);
+      if (r && r.ok) {
+        S.nLocal[m.code] = { sent: r.sent, at: r.at || '', ts: (S.nLocal[m.code] || {}).ts || Date.now(), q: false };
+        if (it) { it.sent = r.sent; it.at = r.at || ''; it.q = false; }
+        if (r.sent && r.arrived) {
+          if (S.nLast && S.nLast.code === m.code) S.nLast.arrived = r.arrived;
+          toast(`Diqqət: ${it ? it.name : 'şagird'} artıq məktəbdədir (gəliş: ${r.arrived})`);
+        }
+      } else {
+        // server qəbul etmədi: yerli vəziyyət atılır, siyahı serverdən yenidən alınır
+        delete S.nLocal[m.code];
+        if (it) { it.sent = !m.sent; it.q = false; }
+        toast(errText(r && r.error, r && r.message));
+        setTimeout(loadNotif, 600);
+      }
+      refreshNotifSoon();
+    }
+  } finally { S.marking = false; renderNotif(); }
+}
+function nextAlert(list) {
+  const pending = list.filter(x => !x.sent);
+  let next = pending.find(x => !S.nSkip.has(x.code));
+  if (!next && pending.length) { S.nSkip.clear(); next = pending[0]; }
+  return next || null;
+}
+function renderBadge() {
+  const n = S.notif, el = $('#nCount');
+  const pend = n && !S.nOld && n.ready && n.schoolDay ? n.list.filter(x => !x.sent).length : 0;
+  el.hidden = !pend; el.textContent = String(pend);
+}
+function alertRow(it, sub, test) {
+  const side = it.sent
+    ? `${it.q ? '<span class="pill warn">Göndərilir…</span>' : `<span class="pill in">Göndərilib ${esc(it.at || '')}</span>`}<button class="btn sm ghost" type="button" data-act="n-undo" data-code="${esc(it.code)}">Geri al</button>`
+    : `${test ? '' : '<span class="pill no">Gözləyir</span>'}${openBtn(it, false)}`;
+  return `<div class="row"><div class="row-main"><div class="nm">${esc(it.name)}</div><div class="sub">${sub}</div></div><div class="row-side">${side}</div></div>`;
+}
+function phoneRow(x, canPhone) {
+  const head = `<div class="row-main"><div class="nm">${esc(x.name)}</div><div class="sub">${esc(x.cls)} sinif${x.parent ? ' · ' + esc(x.parent) : ''}</div></div>`;
+  if (!canPhone) return `<div class="row">${head}<div class="row-side"><span class="pill no">Nömrə yoxdur</span></div></div>`;
+  const busy = S.nSaving.has(x.code), err = S.nPErr[x.code];
+  return `<div class="row">${head}<form class="phone-form" data-code="${esc(x.code)}" novalidate>`
+    + `<input class="inp mono" type="tel" inputmode="tel" autocomplete="off" enterkeyhint="done" maxlength="24" placeholder="WhatsApp nömrəsi" value="${esc(S.nDraft[x.code] || '')}" aria-label="${esc(x.name)}: valideynin WhatsApp nömrəsi" data-code="${esc(x.code)}"${busy ? ' disabled' : ''}${err ? ' aria-invalid="true"' : ''}>`
+    + `<button class="btn sm" type="submit"${busy ? ' disabled' : ''}>${busy ? 'Yazılır…' : 'Yadda saxla'}</button></form>`
+    + `${err ? `<div class="perr warn-txt" role="alert">${esc(err)}</div>` : ''}</div>`;
+}
+function renderNotif(force) {
+  renderBadge();
+  $$('#waSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === S.waMode)));
+  if (S.tab !== 'xeber') return;
+  // nömrə yazılarkən ekran yenilənmir, yoxsa xana itər; yeniləmə xanadan çıxanda göstərilir
+  const ae = document.activeElement;
+  if (!force && ae && ae.closest && ae.closest('#nBody .phone-form')) { S.nDeferred = true; return; }
+  S.nDeferred = false;
+  const box = $('#nBody'), n = S.notif;
+  $('#nTitle').textContent = n ? `Gəlməyənlərin valideynlərinə xəbər · ${n.date}` : 'Gəlməyənlərin valideynlərinə xəbər';
+  $('#nUpd').textContent = S.nLoad ? 'Yenilənir…' : S.nOkAt ? `Yeniləndi: ${hm(S.nOkAt)}` : '';
+  $('#nOpts').hidden = true;
+  if (!S.api) { box.innerHTML = `<div class="empty">${esc(errText('noapi'))}</div>`; return; }
+  if (S.nOld) { box.innerHTML = `<div class="notice"><b>Cədvəldəki Apps Script kodu köhnədir.</b> Bu bölmə üçün kodu ${NEED_VER} versiyasına yeniləyin: Apps Script-də yeni kodu yapışdırın, sonra «Начать развертывание → Управление развертываниями → ✏️ → Новая версия».</div>`; return; }
+  if (!n) { box.innerHTML = `<div class="empty">${S.nLoad ? 'Yüklənir…' : esc(S.nErr || '')}</div>`; return; }
+  const absent = n.list.length + n.nophone.length;
+  const sent = n.list.filter(x => x.sent).length, pend = n.list.length - sent;
+  const ver = n.version || (S.info && S.info.version);
+  const canPhone = !!ver && verGe(ver, PHONE_VER);
+  let html = `<div class="stats"><div class="stat no"><b>${absent}</b><span>Gəlməyib</span></div><div class="stat go"><b>${sent}</b><span>Xəbər göndərilib</span></div><div class="stat warn"><b>${pend}</b><span>Qalıb</span></div><div class="stat"><b>${n.nophone.length}</b><span>Nömrəsiz</span></div></div>`;
+  if (S.nErr) html += `<p class="hint warn-txt">${esc(S.nErr)}</p>`;
+  const tests = n.test || [];
+  const testHtml = tests.length ? `<div class="block"><div class="head"><h2 class="sec">Sınaq: mesajı özünüzə göndərin</h2></div><div class="list">${tests.map(it => alertRow(it, `${esc(it.cls)} sinif · <span class="mono">${esc(fmtPhone(it.wa))}</span>`, true)).join('')}</div><p class="hint">Bu, «Şagirdlər» vərəqində sinfi «Sınaq» olan kartdır. Mesaj həmin sətirdəki nömrəyə gedir, valideynlərə heç nə getmir. Sınaqdan sonra o sətri silə bilərsiniz.</p></div>` : '';
+  $('#nOpts').hidden = !tests.length;
+  if (!n.ready && !S.nEarly) {
+    box.innerHTML = html + `<div class="list"><div class="empty"><b>Siyahı saat ${esc(sfx(n.absTime, '-da', '-də'))} hazır olacaq</b><span>İndi saat ${esc(n.now)}. Hələ gəlməyən: ${absent} şagird, bəziləri yoldadır.</span><div class="acts"><button class="btn sm" type="button" data-act="n-early">Siyahıya indi bax</button></div></div></div>` + testHtml;
+    return;
+  }
+  if (!n.schoolDay && !S.nForce) {
+    box.innerHTML = html + `<div class="notice"><b>Bu gün cəmi ${n.arrivals} şagird gəlib.</b> Bu gün dərs olmaya bilər və ya skaner işləməyib. Boş yerə mesaj getməsin deyə siyahı gizlədilib.<div class="acts"><button class="btn sm" type="button" data-act="n-force">Siyahını yenə də göstər</button></div></div>` + testHtml;
+    return;
+  }
+  $('#nOpts').hidden = false;
+  if (!n.ready) html += `<div class="notice"><b>Hələ saat ${esc(n.absTime)} olmayıb.</b> Bəzi şagirdlər yolda ola bilər.</div>`;
+  const L = S.nLast;
+  if (L) {
+    // şagird artıq gəlibsə, siyahıdan çıxır; geri almaq imkanı yerli qeyddən götürülür
+    const it = findItem(L.code), loc = S.nLocal[L.code];
+    const isSent = it ? it.sent : !!(loc && loc.sent);
+    const undo = isSent ? `<button class="btn sm" type="button" data-act="n-undo" data-code="${esc(L.code)}">${icon('undo')}Geri al</button>` : '';
+    html += L.arrived
+      ? `<div class="notice"><b>Diqqət: ${esc(L.name)} artıq məktəbdədir (gəliş: ${esc(L.arrived)}).</b> Mesajı göndərməmisinizsə, göndərməyin və «Geri al» basın. Göndərmisinizsə, valideynə düzəliş yazın.${undo ? `<div class="acts">${undo}</div>` : ''}</div>`
+      : `<div class="notice ok"><b>${esc(L.name)}</b>: xəbər göndərildi kimi qeyd olundu (${esc(L.at)}).${undo ? ` Səhvdirsə, geri alın.<div class="acts">${undo}</div>` : ''}</div>`;
+  }
+  const next = nextAlert(n.list);
+  if (next) {
+    html += `<div class="panel next"><div class="head"><span class="eyebrow">Növbəti valideyn</span><span class="hint">${pend} valideyn qalıb</span></div>
+      <div><div class="nm big">${esc(next.name)}</div><div class="sub">${esc(next.cls)} sinif · ${esc(next.parent || 'Valideyn')} · <span class="mono">${esc(fmtPhone(next.wa))}</span></div></div>
+      <div class="msgbox">${esc(next.text)}</div>
+      <div class="acts">${openBtn(next, true)}${pend > 1 ? `<button class="btn" type="button" data-act="n-skip" data-code="${esc(next.code)}">Keç</button>` : ''}</div>
+      <p class="hint">Mesajı WhatsApp-da göndərin və bu səhifəyə qayıdın: növbəti valideyn hazır olacaq.</p></div>`;
+  } else if (n.list.length) {
+    html += `<div class="notice ok"><b>Hamısına xəbər göndərilib.</b> ${sent} valideyn.${n.nophone.length ? (canPhone ? ` Nömrəsi olmayan ${n.nophone.length} şagird aşağıdadır: valideynin nömrəsini yazıb ona da göndərə bilərsiniz.` : ` Nömrəsi olmayan ${n.nophone.length} şagirdin valideyninə zəng edin.`) : ''}</div>`;
+  } else if (!n.nophone.length) {
+    html += `<div class="list"><div class="empty"><b>Bu gün hamı gəlib</b><span>Xəbər göndəriləcək valideyn yoxdur.</span></div></div>`;
+  }
+  if (n.list.length) {
+    const per = {};
+    n.list.forEach(x => { const k = per[x.cls] || (per[x.cls] = { s: 0, a: 0 }); k.a++; if (x.sent) k.s++; });
+    let rows = '', cur = null;
+    for (const it of n.list) {
+      if (it.cls !== cur) { cur = it.cls; rows += `<div class="grp"><b>${esc(cur || 'Sinifsiz')}</b><span>${per[cur].s} / ${per[cur].a} xəbər</span></div>`; }
+      rows += alertRow(it, `${esc(it.parent || 'Valideyn')} · <span class="mono">${esc(fmtPhone(it.wa))}</span>`, false);
+    }
+    html += `<div class="block"><div class="head"><h2 class="sec">Bütün gəlməyənlər</h2><span class="hint">${n.list.length} şagird</span></div><div class="list">${rows}</div></div>`;
+  }
+  // nömrəsi buradan yazılanlar öz yerində qalır ki, mesaj elə oradan göndərilsin
+  const saved = n.list.filter(x => S.nSaved.has(x.code));
+  if (n.nophone.length || saved.length) {
+    const rows = n.nophone.map(x => ({ x, s: false })).concat(saved.map(x => ({ x, s: true }))).sort((a, b) => sira(a.x, b.x));
+    const body = rows.map(({ x, s }) => s ? alertRow(x, `${esc(x.cls)} sinif · nömrə yazıldı: <span class="mono">${esc(fmtPhone(x.wa))}</span>`, false) : phoneRow(x, canPhone)).join('');
+    html += `<div class="block" id="nNoPhone"><div class="head"><h2 class="sec">${n.nophone.length ? 'Valideyn nömrəsi yoxdur' : 'Nömrəsi yeni yazılanlar'}</h2><span class="hint">${n.nophone.length || saved.length} şagird</span></div><div class="list">${body}</div><p class="hint">${canPhone
+      ? 'Valideynin WhatsApp nömrəsini xanaya yazıb (məsələn, 050 123 45 67) «Yadda saxla» basın: nömrə cədvəlin «Şagirdlər» vərəqinə yazılacaq və mesajı elə buradan göndərə biləcəksiniz.'
+      : 'Bu valideynlərə zəng edin. Nömrəni cədvəlin «Şagirdlər» vərəqində E sütununa yazsanız, növbəti yeniləmədə siyahıya düşəcək.'}</p></div>`;
+  }
+  if (n.later && n.later.length) {
+    html += `<div class="block"><div class="head"><h2 class="sec">Xəbərdən sonra gələnlər</h2><span class="hint">${n.later.length} şagird</span></div><div class="list">${n.later.map(x => `<div class="row"><div class="row-main"><div class="nm">${esc(x.name)}</div><div class="sub">${esc(x.cls)} sinif</div></div><div class="row-side"><span class="tm">Xəbər <b>${esc(x.at)}</b></span><span class="tm">Gəliş <b>${esc(x.in || '—')}</b></span></div></div>`).join('')}</div></div>`;
+  }
+  box.innerHTML = html + testHtml;
 }
 
 /* ---------- cards ---------- */
@@ -914,7 +1243,7 @@ function drawCard(st, opt) {
   const fit = fitText(g, st.name, RW, 3, [4.8, 4.3, 3.9, 3.5, 3.15, 2.85].map(X), 700, fam);
   g.fillStyle = PRINT.ink; g.font = `700 ${fit.px}px ${fam}`;
   let y = X(school.length > 1 ? 20.4 : 18.8);
-  for (const l of fit.lines) { g.fillText(l, RX, y); y += fit.px * 1.2; }
+  for (const l of fit.lines) { g.fillText(l, RX, y); y += fit.px * 1.3; }
   g.font = `700 ${X(3.5)}px Onest, system-ui, sans-serif`;
   g.fillText(`${st.cls} sinif`, RX, X(41.5));
   g.fillStyle = PRINT.accent; g.font = `700 ${X(2)}px Onest, system-ui, sans-serif`;
@@ -1008,6 +1337,8 @@ async function testAndSave(apiUrl, pin, device, fromJoin) {
     const r = await api('ping', null, 30000);
     if (!r.ok) { S.api = prev.api; S.pin = prev.pin; msg.textContent = errText(r.error, r.message); return false; }
     S.device = device; S.school = r.school || ''; S.info = r;
+    if (prev.api !== S.api) { S.notif = null; S.today = null; S.nLocal = {}; S.nLast = null; S.nSaved.clear(); S.nDraft = {}; S.nPErr = {}; }
+    S.nOld = !verGe(r.version, NEED_VER);
     store.set('api', S.api); store.set('pin', S.pin); store.set('device', S.device); store.set('school', S.school); store.set('info', r);
     msg.textContent = `Qoşuldu: ${r.school || 'məktəb'} · ${r.students} şagird · WhatsApp: ${r.whatsapp ? 'avtomatik' : 'əl ilə'}`;
     showNotice('');
@@ -1075,7 +1406,8 @@ function setTab(t) {
   $$('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
   $$('.view').forEach(v => { v.hidden = v.id !== 'v-' + t; });
   store.set('tab', t);
-  if (t === 'bugun') { renderToday(); if (!S.today || Date.now() - (S.todayAt || 0) > 20000) { S.todayAt = Date.now(); loadToday(); } }
+  if (t === 'bugun') { renderToday(); if (!S.today || Date.now() - (S.todayAt || 0) > 20000) loadToday(); }
+  if (t === 'xeber') { renderNotif(); if (!S.notif || Date.now() - (S.nAt || 0) > 20000) loadNotif(); }
   if (t === 'kartlar') renderCards();
   if (t === 'ayarlar') renderSettings();
 }
@@ -1099,23 +1431,48 @@ function onClick(e) {
     case 'cancel-no': S.confirmCancel = false; renderLast(); break;
     case 'cancel-yes': cancelLast(); break;
     case 'flush': flush(); break;
-    case 'today-refresh': S.todayAt = Date.now(); loadToday(); break;
+    case 'today-refresh': loadToday(); break;
     case 't-chip': S.tSt = t.dataset.v; renderToday(); break;
+    case 'n-refresh': S.nOld = false; loadNotif(); break;
+    case 'n-early': S.nEarly = true; renderNotif(); break;
+    case 'n-force': S.nForce = true; renderNotif(); break;
+    case 'n-skip': S.nSkip.add(t.dataset.code); renderNotif(); break;
+    case 'n-wa': S.waMode = t.dataset.m; store.set('waMode', S.waMode); renderNotif(); break;
+    case 'n-open': {
+      // keçid öz-özünə açılır; vəziyyət dərhal yazılır, ekran isə bir azdan yenilənir
+      const code = t.dataset.code, it = findItem(code);
+      if (!it || it.sent) break;
+      markAlert(code, true);
+      S.nSkip.delete(code);
+      S.nLast = { code, name: it.name, at: hm(Date.now()), arrived: '' };
+      const fromCard = !!t.closest('.panel.next');
+      setTimeout(() => { renderNotif(); if (fromCard) window.scrollTo(0, 0); }, 80);
+      break;
+    }
+    case 'n-undo': {
+      const code = t.dataset.code;
+      markAlert(code, false);
+      if (S.nLast && S.nLast.code === code) S.nLast = null;
+      toast('Qeyd geri alındı');
+      renderNotif();
+      break;
+    }
     case 'k-pdf': makePdf(); break;
     case 'k-reload': { let p = ''; try { p = sessionStorage.getItem('mgj.admin') || ''; } catch (x) { p = ''; } if (p) loadRoster(p); else { S.roster = null; renderCards(); } break; }
     case 'join-show': showJoin(); break;
     case 'forget': $('#forgetBox').innerHTML = `<span class="hint">Əminsiniz?${S.outbox.length ? ` Göndərilməmiş ${S.outbox.length} skan da silinəcək.` : ''}</span><button class="btn sm danger" type="button" data-act="forget-yes">Bəli, ayır</button><button class="btn sm ghost" type="button" data-act="forget-no">Xeyr</button>`; break;
     case 'forget-no': $('#forgetBox').innerHTML = '<button class="btn danger" type="button" data-act="forget">Bu cihazı ayır</button>'; break;
     case 'forget-yes':
-      ['api', 'pin', 'school', 'info', 'outbox', 'recent'].forEach(k => store.del(k));
+      ['api', 'pin', 'school', 'info', 'outbox', 'recent', 'markq'].forEach(k => store.del(k));
       S.api = ''; S.pin = ''; S.school = ''; S.info = null; S.outbox = []; S.recent = []; S.last = null;
+      S.markQ = []; S.notif = null; S.nLocal = {}; S.nLast = null; S.nOld = false; S.today = null; S.nSaved.clear(); S.nDraft = {}; S.nPErr = {};
       $('#forgetBox').innerHTML = '<button class="btn danger" type="button" data-act="forget">Bu cihazı ayır</button>';
       stopCam(); renderAll(); toast('Cihaz ayrıldı');
       break;
   }
 }
 function renderAll() {
-  renderHeader(); renderRecent(); renderLast(); renderQueue(); renderCamButtons(); renderSettings(); setConn(S.conn);
+  renderHeader(); renderRecent(); renderLast(); renderQueue(); renderCamButtons(); renderSettings(); renderNotif(); setConn(S.conn);
   $$('#modeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === S.mode)));
 }
 function bind() {
@@ -1134,6 +1491,33 @@ function bind() {
   $('#mq').addEventListener('input', doSearch);
   $('#tCls').addEventListener('change', e => { S.tCls = e.target.value; renderToday(); });
   $('#tQ').addEventListener('input', e => { S.tQ = e.target.value; renderToday(); });
+  // «Valideyn nömrəsi yoxdur»: yazılan nömrə yadda qalır, Enter və ya «Yadda saxla» cədvələ yazır
+  $('#nBody').addEventListener('input', e => {
+    const inp = e.target.closest && e.target.closest('.phone-form input');
+    if (!inp) return;
+    const code = inp.dataset.code;
+    S.nDraft[code] = inp.value;
+    if (S.nPErr[code]) {
+      delete S.nPErr[code];
+      inp.removeAttribute('aria-invalid');
+      const pe = inp.closest('.row') && inp.closest('.row').querySelector('.perr');
+      if (pe) pe.remove();
+    }
+  });
+  $('#nBody').addEventListener('submit', e => {
+    const f = e.target.closest && e.target.closest('.phone-form');
+    if (!f) return;
+    e.preventDefault();
+    savePhone(f.dataset.code, f.querySelector('input').value);
+  });
+  $('#nBody').addEventListener('focusout', () => {
+    if (!S.nDeferred) return;
+    // düymə basılıbsa, əvvəlcə onun işi görülsün
+    setTimeout(() => {
+      const ae = document.activeElement;
+      if (S.nDeferred && !(ae && ae.closest && ae.closest('#nBody .phone-form'))) renderNotif();
+    }, 600);
+  });
   $('#kCls').addEventListener('change', e => { S.kCls = e.target.value; renderCards(); });
   $('#kForm').addEventListener('submit', e => { e.preventDefault(); loadRoster($('#kPin').value.replace(/\D/g, '')); });
   $('#cfg').addEventListener('submit', e => { e.preventDefault(); testAndSave($('#cfApi').value, $('#cfPin').value, $('#cfDev').value, false); });
@@ -1147,7 +1531,8 @@ function bind() {
     if (document.visibilityState !== 'visible') return;
     if (S.awake && S.stream && !S.wl) keepAwake(true);
     flush();
-    if (S.tab === 'bugun' && Date.now() - (S.todayAt || 0) > 20000) { S.todayAt = Date.now(); loadToday(); }
+    if (S.tab === 'bugun' && Date.now() - (S.todayAt || 0) > 20000) loadToday();
+    if (S.tab === 'xeber' && Date.now() - (S.nAt || 0) > 15000) loadNotif();
   });
 }
 async function init() {
@@ -1156,7 +1541,13 @@ async function init() {
   tick();
   setInterval(tick, 15000);
   setInterval(flush, 10000);
-  setInterval(() => { if (S.tab === 'bugun' && document.visibilityState === 'visible') { S.todayAt = Date.now(); loadToday(); } }, 60000);
+  setInterval(() => {
+    if (document.visibilityState !== 'visible' || !S.api) return;
+    if (S.tab === 'bugun' && Date.now() - (S.todayAt || 0) > 28000) loadToday();
+    // «Bildirişlər» açıqdırsa hər dəqiqə, başqa bölmədə isə hər 5 dəqiqə (nişandakı say üçün)
+    const age = Date.now() - (S.nAt || 0);
+    if (S.tab === 'xeber' ? age > 58000 : age > 295000) loadNotif();
+  }, 5000);
   if (readJoin()) return;
   if (!S.api) {
     setTab('ayarlar');
@@ -1167,18 +1558,20 @@ async function init() {
   setTab(TABS.includes(saved) ? saved : 'skaner');
   try {
     const r = await api('ping', null, 30000);
-    if (r.ok) { S.school = r.school || ''; S.info = r; store.set('school', S.school); store.set('info', r); setConn('ok'); }
+    if (r.ok) { S.school = r.school || ''; S.info = r; S.nOld = !verGe(r.version, NEED_VER); store.set('school', S.school); store.set('info', r); setConn('ok'); }
     else { setConn('err'); showNotice('<b>Cədvələ qoşulmaq alınmadı.</b> ' + esc(errText(r.error, r.message))); }
   } catch (e) { setConn('err'); }
   renderHeader();
   flush();
+  loadNotif();
+  renderNotif();
   if (S.camAuto && store.get('camOn', false)) {
     let granted = false;
     try { const p = await navigator.permissions.query({ name: 'camera' }); granted = p.state === 'granted'; } catch (e) { granted = false; }
     if (granted) startCam();
   }
 }
-if (window.__MGJ_TEST__) window.__MGJ = { S, onCode, drawCard, codeOk, startCam, stopCam };
+if (window.__MGJ_TEST__) window.__MGJ = { S, onCode, drawCard, codeOk, startCam, stopCam, loadNotif, loadToday, sfx, fmtPhone, verGe, phoneDigits };
 init();
 })();
 </script>
