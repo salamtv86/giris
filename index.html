@@ -6,6 +6,11 @@
 <meta name="theme-color" content="#2B3FC4">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Giriş Jurnalı">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Məktəb Giriş Jurnalı</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -209,8 +214,42 @@ main{padding-block:16px 72px}
 .cards img{display:block;width:100%;height:auto;border-radius:10px;box-shadow:var(--shadow)}
 .cards figcaption{font-size:12.5px;color:var(--muted)}
 .qrbox{display:grid;gap:10px;justify-items:start}
+#installBox{display:grid;gap:10px}
+.isteps{margin:0;padding-left:22px;display:grid;gap:10px;font-size:14.5px;max-width:68ch}
+.isteps .acts{margin-top:8px}
 .qrbox canvas{background:#FFFFFF;border-radius:12px;padding:10px;max-width:100%}
-.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--surface);padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:var(--shadow);width:max-content;max-width:calc(100% - 32px);text-align:center}
+/* students */
+.kapp{display:grid;gap:14px;min-width:0}
+.kbig{width:100%}
+.khead{align-items:center}
+.srow{flex-wrap:wrap}
+.pick{display:grid;place-items:center;width:44px;height:44px;margin:-10px -4px -10px -12px;flex:none;cursor:pointer;border-radius:10px}
+.pick input{width:21px;height:21px;accent-color:var(--accent);margin:0;cursor:pointer}
+.srow .row-main{flex:1 1 160px}
+.srow.on{background:var(--accent-soft)}
+.editor{flex-basis:100%;display:grid;gap:12px;padding:14px;margin:4px 0 2px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);min-width:0}
+#v-kartlar .inp{font-size:16px} /* iPhone-da xanaya toxunanda səhifə böyüməsin */
+.editor .inp{background:var(--surface)}
+.form-err{color:var(--stop);font-weight:600;font-size:14px}
+.zone{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;border-top:1px dashed var(--line);padding-top:12px}
+.zone .confirm{margin:0}
+.confirm .inp{flex:1 1 220px;min-height:38px;background:var(--surface)}
+.added{border:2px solid var(--go)}
+.added .sec{color:var(--go)}
+.cardimg{display:block;width:100%;max-width:360px;height:auto;aspect-ratio:85.6/54;border-radius:10px;box-shadow:var(--shadow);background:#FFFFFF}
+.dup{margin:6px 0 8px;padding-left:20px;display:grid;gap:6px}
+.dup li .btn{margin-left:6px}
+.dup .mono{white-space:nowrap}
+.pdf-link{font-weight:700;color:var(--accent)}
+.leftbox summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:4px 0}
+.leftbox summary::-webkit-details-marker{display:none}
+.leftbox summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:-4px 0 0 2px}
+.leftbox[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+.leftbox .count{background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.selbar{position:sticky;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;padding:10px 10px 10px 16px;border-radius:14px;background:var(--ink);color:var(--surface);box-shadow:0 6px 24px rgba(19,26,54,.28)}
+.selbar .btn.ghost{color:var(--surface)}
+.selbar .btn.ghost:hover{background:rgba(255,255,255,.12)}
+.toast{position:fixed;left:50%;bottom:calc(18px + var(--lift,0px) + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;background:var(--ink);color:var(--surface);padding:11px 16px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:var(--shadow);width:max-content;max-width:calc(100% - 32px);text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -230,7 +269,7 @@ main{padding-block:16px 72px}
         <button class="tab" type="button" role="tab" data-act="tab" data-tab="skaner" aria-selected="true">Skaner <span class="count" id="qCount" hidden>0</span></button>
         <button class="tab" type="button" role="tab" data-act="tab" data-tab="bugun" aria-selected="false">Bu gün</button>
         <button class="tab" type="button" role="tab" data-act="tab" data-tab="xeber" aria-selected="false">Bildirişlər <span class="count" id="nCount" hidden>0</span></button>
-        <button class="tab" type="button" role="tab" data-act="tab" data-tab="kartlar" aria-selected="false">Kartlar</button>
+        <button class="tab" type="button" role="tab" data-act="tab" data-tab="kartlar" aria-selected="false">Şagirdlər</button>
         <button class="tab" type="button" role="tab" data-act="tab" data-tab="ayarlar" aria-selected="false">Ayarlar</button>
       </nav>
     </div>
@@ -307,23 +346,36 @@ main{padding-block:16px 72px}
       <p class="hint">Hər xəbər «Jurnal»a yazılır və cədvəlin «Bu gün» vərəqində görünür. Valideynlərdən məktəbin nömrəsini telefonlarında yadda saxlamalarını xahiş edin: bu, nömrənin bloklanma riskini azaldır.</p>
     </section>
 
-    <section class="view" id="v-kartlar" aria-label="Kartlar" hidden>
-      <div class="panel">
-        <h2 class="sec">Çap üçün QR kartlar</h2>
-        <p class="lede">A4 vərəqdə 10 kart, hər biri bank kartı ölçüsündə (85,6 × 54 mm). Çapda miqyası 100% saxlayın və xətt boyunca kəsin. Laminasiya etsəniz, kart il boyu xarab olmaz.</p>
+    <section class="view" id="v-kartlar" aria-label="Şagirdlər" hidden>
+      <div class="panel" id="kLock">
+        <h2 class="sec">Şagirdlər və QR kartlar</h2>
+        <p class="lede">Yeni şagird əlavə etmək, məlumatı düzəltmək, məktəbdən gedən şagirdi çıxarmaq və kart çap etmək üçün admin PIN-ini yazın.</p>
         <form class="filters" id="kForm" autocomplete="off">
           <label class="field"><span>Admin PIN-i</span><input class="inp" id="kPin" type="password" inputmode="numeric" autocomplete="off"></label>
-          <button class="btn primary" type="submit" id="kLoad">Siyahını yüklə</button>
+          <button class="btn primary" type="submit" id="kLoad">Daxil ol</button>
         </form>
-        <div class="filters" id="kTools" hidden>
-          <label class="field"><span>Sinif</span><select class="inp" id="kCls"><option value="">Bütün siniflər</option></select></label>
-          <button class="btn primary" type="button" data-act="k-pdf" id="kPdf">PDF yüklə</button>
-          <button class="btn" type="button" data-act="k-reload">Siyahını yenilə</button>
-        </div>
-        <div class="prog" id="kProg" hidden><i></i></div>
-        <p class="hint" id="kMsg" role="status"></p>
+        <label class="chk"><input type="checkbox" id="kKeep"> Bu cihazda yadda saxla</label>
+        <p class="hint warn-txt" id="kMsg0" role="status"></p>
+        <p class="hint">Admin PIN-i kompüterdə, Google cədvəlində görünür: «Giriş Jurnalı» menyusu → «Admin PIN-i». Qapıdakı skaner PIN-i burada işləmir.</p>
       </div>
-      <div class="cards" id="kPrev"></div>
+      <div class="kapp" id="kApp" hidden>
+        <div class="head"><h2 class="sec" id="kTitle">Şagirdlər</h2><div class="acts"><span class="hint" id="kUpd"></span><button class="btn sm" type="button" data-act="k-reload">Yenilə</button><button class="btn sm ghost" type="button" data-act="k-logout">Çıxış</button></div></div>
+        <div class="notice" id="kOld" hidden><b>Şagird əlavə etmək üçün cədvəldəki Apps Script kodunu yeniləyin (versiya 1.3).</b> Siyahı və kart çapı indi də işləyir.</div>
+        <div id="kAddBox"></div>
+        <div class="filters" id="kTools">
+          <label class="field"><span>Sinif</span><select class="inp" id="kCls"><option value="">Bütün siniflər</option></select></label>
+          <label class="field grow"><span>Axtarış</span><input class="inp" id="kQ" type="search" placeholder="Ad və ya kart kodu" autocomplete="off" enterkeyhint="search"></label>
+        </div>
+        <div class="chips" id="kChips" role="group" aria-label="Süzgəc"></div>
+        <div class="head khead"><span class="hint" id="kCount"></span><button class="btn sm" type="button" data-act="k-pdf" id="kPdf">Siyahının kartları (PDF)</button></div>
+        <div class="prog" id="kProg" hidden><i></i></div>
+        <div id="kMsg" role="status"></div>
+        <div class="list" id="kList"></div>
+        <details class="block leftbox" id="kLeftBox" hidden><summary><span class="sec">Məktəbdən gedənlər</span><span class="count n" id="kLeftN">0</span></summary><div class="list" id="kLeft"></div><p class="hint">Səhvən çıxarılan şagirdi «Geri qaytar» ilə qaytarın: köhnə kartı yenə işləyəcək. Hamısı cədvəlin «Məktəbdən gedənlər» vərəqindədir.</p></details>
+        <p class="hint">A4 vərəqdə 10 kart çıxır, hər biri bank kartı ölçüsündədir (85,6 × 54 mm). Çapda miqyası 100% saxlayın və xətt boyunca kəsin. Laminasiya etsəniz, kart il boyu xarab olmaz.</p>
+        <div class="selbar" id="kSelBar" hidden></div>
+      </div>
+      <datalist id="kClsList"></datalist>
     </section>
 
     <section class="view" id="v-ayarlar" aria-label="Ayarlar" hidden>
@@ -337,10 +389,15 @@ main{padding-block:16px 72px}
         </div>
         <div class="acts"><button class="btn primary" type="submit" id="cfSave">Yoxla və yadda saxla</button><span class="hint" id="cfMsg" role="status"></span></div>
       </form>
+      <div class="panel" id="installPanel">
+        <h2 class="sec">Telefonun ana ekranına əlavə edin</h2>
+        <p class="lede">Sayt ana ekranda məktəbin nişanı ilə ayrıca ikon kimi durur və tətbiq kimi tam ekranda açılır. İnternet kəsiləndə də açılır, skanlar növbədə saxlanır.</p>
+        <div id="installBox"></div>
+      </div>
       <div class="panel" id="joinPanel" hidden>
         <h2 class="sec">Başqa cihazı qoşun</h2>
         <p class="lede">Bu QR-ı ikinci telefonun və ya planşetin kamerası ilə oxudun: ünvan və PIN özü yazılır. QR-ın içində PIN var, onu yalnız işçilərə göstərin.</p>
-        <div class="acts"><button class="btn" type="button" data-act="join-show" id="joinBtn">QR-ı göstər</button></div>
+        <div class="acts"><button class="btn" type="button" data-act="join-show" id="joinBtn">QR-ı göstər</button><button class="btn" type="button" data-act="join-copy">Linki kopyala</button></div>
         <div class="qrbox" id="joinBox" hidden></div>
       </div>
       <div class="panel">
@@ -445,7 +502,10 @@ const S = {
   nDraft: {}, nPErr: {}, nSaving: new Set(), nSaved: new Map(), nSavedDay: '', nDeferred: false,
   waMode: ['app', 'web', 'desk'].includes(store.get('waMode', '')) ? store.get('waMode', '') : (isMobile ? 'app' : 'web'),
   markQ: Array.isArray(store.get('markq', [])) ? store.get('markq', []) : [], marking: false,
-  roster: null, rosterSchool: '', kCls: '', kSig: '', wl: null, ovTimer: 0, toastT: 0
+  roster: null, rosterSchool: '', rosterLeft: [], rosterAt: 0, kCls: '', kQ: '', kF: 'all', kSel: new Set(), kOld: false, kLoading: false,
+  kAdd: null, kEdit: '', kDraft: null, kEditErr: '', kBusy: '', kConfirm: false, kReason: '', kPdf: null,
+  admin: (() => { try { return sessionStorage.getItem('mgj.admin') || ''; } catch (e) { return ''; } })() || String(store.get('admin', '') || ''),
+  wl: null, ovTimer: 0, toastT: 0
 };
 if (S.info && S.info.version && !verGe(S.info.version, NEED_VER)) S.nOld = true;
 // səhifə yenidən açılanda göndərilməmiş xəbər qeydləri yenə «göndərilib» görünsün (ikinci dəfə göndərilməsin)
@@ -571,7 +631,7 @@ function applyResult(rec, r, live) {
     }
     return;
   }
-  Object.assign(rec, { status: 'done', kind: r.kind, name: r.name || '', cls: r.cls || '', time: r.time || '', notify: r.notify || null, row: r.row || 0, lastType: r.lastType || '', lastTime: r.lastTime || '' });
+  Object.assign(rec, { status: 'done', kind: r.kind, name: r.name || '', cls: r.cls || '', time: r.time || '', notify: r.notify || null, row: r.row || 0, lastType: r.lastType || '', lastTime: r.lastTime || '', left: r.left || null });
   renderRecent(); saveRecent();
   if (!live) return;
   const nm = esc(rec.name), meta = `${esc(rec.cls)} sinif · <span class="mono">${esc(rec.time)}</span>`;
@@ -582,6 +642,10 @@ function applyResult(rec, r, live) {
   } else if (r.kind === 'dup') {
     overlay('dup', W('TƏKRAR') + `<div class="sig-name">${nm}</div>` + M(`Artıq qeyd olunub: ${rec.lastType === 'out' ? 'çıxdı' : 'gəldi'} <span class="mono">${esc(rec.lastTime)}</span>. Bir də sayılmadı.`), 3500);
     beep('warn');
+  } else if (r.kind === 'unknown' && r.left) {
+    // məktəbdən çıxarılmış şagirdin kartı
+    overlay('unknown', W('KART BAĞLIDIR') + `<div class="sig-name">${esc(r.left.name || '')}</div>` + M(`${esc(r.left.cls || '')} sinif · ${esc(r.left.at || '')} tarixində məktəbdən çıxarılıb. Kart daha işləmir.`), 5000);
+    beep('err');
   } else if (r.kind === 'unknown') {
     overlay('unknown', W('TANINMADI') + M(`Bu kart siyahıda yoxdur: <span class="mono">${esc(fmtCode(rec.code))}</span>. Karta yeni kod verilibsə, köhnəsi işləmir.`), 5000);
     beep('err');
@@ -630,6 +694,7 @@ function renderRecent() {
     else if (r.status === 'error') { pill = '<span class="pill stop">Xəta</span>'; main = 'Kart ' + fmtCode(r.code); sub = r.err || ''; }
     else if (r.kind === 'in' || r.kind === 'out') { pill = r.cancelled ? '<span class="pill stop">Ləğv</span>' : r.kind === 'in' ? '<span class="pill in">Gəldi</span>' : '<span class="pill out">Çıxdı</span>'; main = r.name; sub = `${r.cls} sinif · ${(r.notify && r.notify.label) || ''}`; }
     else if (r.kind === 'dup') { pill = '<span class="pill warn">Təkrar</span>'; main = r.name; sub = `${r.cls} sinif · artıq qeyd olunub`; }
+    else if (r.kind === 'unknown' && r.left) { pill = '<span class="pill stop">Bağlı kart</span>'; main = r.left.name || ('Kart ' + fmtCode(r.code)); sub = `${r.left.cls || ''} sinif · məktəbdən çıxarılıb ${r.left.at || ''}`; }
     else if (r.kind === 'unknown') { pill = '<span class="pill stop">Tanınmadı</span>'; main = 'Kart ' + fmtCode(r.code); sub = 'siyahıda yoxdur'; }
     else { pill = '<span class="pill stop">Yad QR</span>'; main = '—'; sub = ''; }
     return `<div class="row"><span class="tm"><b>${hm(r.t)}</b></span>${pill}<div class="row-main"><div class="nm">${esc(main)}</div>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div></div>`;
@@ -853,7 +918,7 @@ function renderToday() {
   const scope = t.list.filter(s => S.tCls ? s.cls === S.tCls : !s.t);
   const c = { inside: 0, left: 0, absent: 0 };
   scope.forEach(s => { c[s.st]++; });
-  $('#tStats').innerHTML = `<div class="stats"><div class="stat go"><b>${c.inside}</b><span>Məktəbdə</span></div><div class="stat out"><b>${c.left}</b><span>Çıxıb</span></div><div class="stat no"><b>${c.absent}</b><span>Gəlməyib</span></div><div class="stat"><b>${scope.length}</b><span>Cəmi şagird</span></div></div>` + (S.todayErr ? `<p class="hint warn-txt">${esc(S.todayErr)}</p>` : '');
+  $('#tStats').innerHTML = `<div class="stats"><div class="stat go"><b>${c.inside}</b><span>Məktəbdə</span></div><div class="stat out"><b>${c.left}</b><span>Çıxıb</span></div><div class="stat no"><b>${c.absent}</b><span>Gəlməyib</span></div><div class="stat"><b>${scope.length}</b><span>Cəmi şagird</span></div></div>` + (S.todayErr ? `<p class="hint warn-txt">Son yeniləmə alınmadı: ${esc(S.todayErr.replace(/\.$/, ''))}. Rəqəmlər ${S.todayOkAt ? esc(hm(S.todayOkAt)) + ' ' : ''}vəziyyətinədir, sayt bir azdan özü yenidən yoxlayacaq.</p>` : '');
   const feed = Array.isArray(t.feed) ? t.feed.filter(e => !S.tCls || e.cls === S.tCls).slice(0, 6) : [];
   $('#tFeedBox').hidden = !Array.isArray(t.feed);
   $('#tFeed').innerHTML = feed.length ? feed.map(e => `<div class="row"><span class="tm"><b>${esc(e.time)}</b></span>${e.type === 'in' ? '<span class="pill in">Gəldi</span>' : '<span class="pill out">Çıxdı</span>'}<div class="row-main"><div class="nm">${esc(e.name)}</div><div class="sub">${esc(e.cls)} sinif</div></div></div>`).join('') : '<div class="empty">Bu gün hələ skan yoxdur.</div>';
@@ -1251,73 +1316,445 @@ function drawCard(st, opt) {
   for (const ch of 'GİRİŞ-ÇIXIŞ KARTI') { g.fillText(ch, cx, X(48)); cx += g.measureText(ch).width + X(0.32); }
   return cv;
 }
-const cardList = () => (S.roster || []).filter(s => !S.kCls || s.cls === S.kCls).sort(byClsName);
-async function loadRoster(pin) {
-  const msg = $('#kMsg');
+/* ---------- students: list, add, edit, left school, cards (admin PIN) ---------- */
+const STUD_VER = '1.3'; // şagird əlavə etmək, düzəliş, məktəbdən çıxarmaq
+const lowerAz = s => { try { return s.toLocaleLowerCase('az'); } catch (e) { return s.toLowerCase(); } };
+// serverdəki adDuzelt_ və sinifDuzelt_ ilə eyni qayda: «əliyev vəli» → «Əliyev Vəli», «10a1» → «10 a 1»
+function normName(v) {
+  return clean(v).slice(0, 80).split(' ').map(w => {
+    if (!w || w !== lowerAz(w) || /^(oğlu|qızı|oglu|qizi)$/.test(w)) return w;
+    const c = w.charAt(0);
+    return (c === 'i' ? 'İ' : c === 'ı' ? 'I' : c.toUpperCase()) + w.slice(1);
+  }).join(' ');
+}
+function normCls(v) {
+  const s = clean(v).slice(0, 20);
+  const m = s.match(/^(\d{1,2})\s*[-./]?\s*([A-Za-zƏəÇçĞğIıİiÖöŞşÜüАаВвСсЕеОо])\s*[-./]?\s*(\d{1,2})?$/);
+  if (!m) return s;
+  let L = lowerAz(m[2]);
+  L = ({ 'а': 'a', 'в': 'b', 'с': 'c', 'е': 'e', 'о': 'o', 'ı': 'i' })[L] || L;
+  return m[1] + ' ' + L + (m[3] ? ' ' + m[3] : '');
+}
+const nameProblem = n => (n.replace(/[\s\d.,'’"()\-]/g, '').length < 3 || n.indexOf(' ') < 1 ? 'bad_name' : '');
+function kErr(code, msg) {
+  return ({
+    pin: 'Admin PIN-i səhvdir.',
+    bad_name: 'Soyadı və adı yazın, məsələn: Əliyev Vəli.',
+    bad_class: 'Sinfi yazın, məsələn: 10 a 1.',
+    unknown_student: 'Bu şagird siyahıda tapılmadı. «Yenilə» basın.'
+  })[code] || errText(code, msg);
+}
+function setAdmin(pin, keep) {
+  S.admin = pin;
+  try { sessionStorage.setItem('mgj.admin', pin); } catch (e) { /* ignore */ }
+  if (keep === true) store.set('admin', pin); else if (keep === false) store.del('admin');
+}
+function dropAdmin(msg) {
+  S.admin = ''; S.roster = null; S.rosterLeft = []; S.kAdd = null; S.kEdit = ''; S.kDraft = null; S.kSel.clear(); S.kBusy = '';
+  try { sessionStorage.removeItem('mgj.admin'); } catch (e) { /* ignore */ }
+  store.del('admin');
+  $('#kPin').value = ''; $('#kKeep').checked = false;
+  $('#kMsg0').textContent = msg || '';
+  renderStudents();
+}
+const studentBy = code => (S.roster || []).find(s => s.code === code) || null;
+function upsertStudent(st) {
+  const i = S.roster.findIndex(s => s.code === st.code);
+  if (i >= 0) S.roster[i] = st; else S.roster.push(st);
+  S.roster.sort(byClsName);
+}
+// admin sorğusu: «məşğul» olsa bir dəfə təkrarlanır; PIN dəyişibsə çıxış edilir
+async function adminApi(action, data) {
+  const body = () => Object.assign({ admin: S.admin, device: S.device || 'Sayt' }, data);
+  let r = await api(action, body(), 40000);
+  if (r && r.ok === false && r.error === 'busy') { await sleep(1500); r = await api(action, body(), 40000); }
+  if (r && r.ok === false && (r.error === 'pin' || r.error === 'locked')) { dropAdmin(r.error === 'pin' ? 'Admin PIN-i dəyişib. Yeni PIN-i yazın.' : errText('locked')); return null; }
+  if (r && r.ok === false && r.error === 'unknown_action') { S.kOld = true; renderStudents(); return null; }
+  return r;
+}
+async function loadRoster(pin, keep) {
+  const msg = $('#kMsg0');
   if (!S.api) { msg.textContent = errText('noapi'); return; }
-  msg.textContent = 'Siyahı yüklənir…';
+  if (!pin) { msg.textContent = 'Admin PIN-ini yazın.'; return; }
+  if (S.kLoading) return;
+  S.kLoading = true;
+  const logged = !!S.roster;
+  if (logged) $('#kUpd').textContent = 'Yenilənir…'; else { msg.textContent = 'Siyahı yüklənir…'; $('#kLoad').disabled = true; }
   try {
     const r = await api('roster', { admin: pin }, 40000);
-    if (!r.ok) { msg.textContent = r.error === 'pin' ? 'Admin PIN-i səhvdir.' : errText(r.error, r.message); return; }
-    S.roster = r.list; S.rosterSchool = r.school || ''; S.kSig = '';
-    try { sessionStorage.setItem('mgj.admin', pin); } catch (e) { /* ignore */ }
-    msg.textContent = '';
-    renderCards();
-  } catch (e) { msg.textContent = errText(e.code); }
-}
-function renderCards() {
-  const has = !!S.roster;
-  $('#kForm').hidden = has; $('#kTools').hidden = !has;
-  if (!has) { $('#kPrev').innerHTML = ''; return; }
-  const classes = Array.from(new Set(S.roster.map(s => s.cls))).sort(collator.compare);
-  const sel = $('#kCls');
-  if (sel.dataset.sig !== classes.join('|')) { sel.innerHTML = '<option value="">Bütün siniflər</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join(''); sel.dataset.sig = classes.join('|'); }
-  if (!classes.includes(S.kCls)) S.kCls = '';
-  sel.value = S.kCls;
-  const list = cardList();
-  if (!$('#kMsg').dataset.keep) $('#kMsg').textContent = list.length ? `${list.length} kart, ${Math.ceil(list.length / 10)} vərəq A4.` : 'Siyahıda şagird yoxdur.';
-  $('#kPdf').disabled = !list.length;
-  previewCards(list);
-}
-async function previewCards(list) {
-  const pick = list.slice(0, 4);
-  const sig = pick.map(s => s.code + s.name + s.cls).join('|') + S.rosterSchool + list.length;
-  if (sig === S.kSig) return;
-  S.kSig = sig;
-  await fontsReady();
-  if (S.kSig !== sig) return;
-  $('#kPrev').innerHTML = pick.map(st => `<figure><img alt="${esc(st.name)} üçün QR kart" src="${drawCard(st, { qr: true, scale: 0.55, border: true }).toDataURL('image/png')}" width="514" height="324"><figcaption>${esc(st.name)} · ${esc(st.cls)}</figcaption></figure>`).join('') + (list.length > 4 ? `<p class="hint">və daha ${list.length - 4} kart PDF-də</p>` : '');
-}
-async function makePdf() {
-  const list = cardList();
-  if (!list.length) return;
-  const msg = $('#kMsg'), btn = $('#kPdf'), prog = $('#kProg'), bar = prog.firstElementChild;
-  btn.disabled = true; prog.hidden = false; bar.style.width = '0%';
-  msg.dataset.keep = '1'; msg.textContent = 'PDF hazırlanır…';
-  try {
-    const ns = await need('jspdf', PDF_LIB);
-    await fontsReady();
-    const pdf = new ns.jsPDF({ unit: 'mm', format: 'a4', compress: true });
-    const CW = CARD.w, CH = CARD.h, GX = 4, GY = 2;
-    const mx = (210 - (2 * CW + GX)) / 2, my = (297 - (5 * CH + 4 * GY)) / 2;
-    for (let i = 0; i < list.length; i++) {
-      if (i && i % 10 === 0) pdf.addPage();
-      const slot = i % 10, x = mx + (slot % 2) * (CW + GX), y = my + Math.floor(slot / 2) * (CH + GY);
-      pdf.addImage(drawCard(list[i], { qr: false }).toDataURL('image/jpeg', 0.92), 'JPEG', x, y, CW, CH, undefined, 'FAST');
-      qrPdf(pdf, list[i].code, x + CARD.qx, y + CARD.qy, CARD.qs);
-      pdf.setDrawColor(190, 197, 212); pdf.setLineWidth(0.2); pdf.roundedRect(x, y, CW, CH, 3, 3, 'S');
-      if (i % 4 === 3) { bar.style.width = ((i + 1) / list.length * 100).toFixed(1) + '%'; await sleep(0); }
+    if (!r.ok) {
+      if (r.error === 'pin' && logged) dropAdmin('Admin PIN-i dəyişib. Yeni PIN-i yazın.');
+      else if (r.error === 'pin') {
+        msg.textContent = S.admin === pin ? 'Yadda saxlanmış admin PIN-i artıq keçərli deyil. Yeni PIN-i yazın.' : 'Admin PIN-i səhvdir.';
+        if (S.admin === pin) dropAdmin(msg.textContent);
+      } else if (logged) toast(errText(r.error, r.message));
+      else msg.textContent = errText(r.error, r.message);
+      return;
     }
-    bar.style.width = '100%';
-    pdf.save('QR kartlar' + (S.kCls ? ' ' + S.kCls : '') + '.pdf');
-    msg.textContent = `${list.length} kart hazırdır (${Math.ceil(list.length / 10)} vərəq). Çapda miqyası 100% saxlayın.`;
+    setAdmin(pin, keep);
+    S.roster = r.list.slice().sort(byClsName);
+    S.rosterLeft = Array.isArray(r.left) ? r.left : [];
+    S.rosterSchool = r.school || '';
+    S.kOld = !r.version || !verGe(r.version, STUD_VER);
+    S.rosterAt = Date.now();
+    const codes = new Set(S.roster.map(s => s.code));
+    Array.from(S.kSel).forEach(c => { if (!codes.has(c)) S.kSel.delete(c); });
+    if (S.kEdit && !codes.has(S.kEdit)) { S.kEdit = ''; S.kDraft = null; }
+    msg.textContent = '';
   } catch (e) {
-    msg.textContent = e && e.message === 'load' ? 'PDF proqram hissəsi yüklənmədi. İnternet bağlantısını yoxlayın.' : 'PDF hazırlanmadı. Yenidən cəhd edin.';
+    if (logged) toast(errText(e.code)); else msg.textContent = errText(e.code);
   } finally {
-    btn.disabled = false;
-    setTimeout(() => { prog.hidden = true; }, 900);
-    setTimeout(() => { delete msg.dataset.keep; }, 15000);
+    S.kLoading = false; $('#kLoad').disabled = false;
+    renderStudents();
   }
+}
+// sınaq kartı yalnız öz sinfi seçiləndə görünür («Bu gün»dəki kimi)
+const kInScope = s => (S.kCls ? s.cls === S.kCls : s.cls !== 'Sınaq');
+function kFiltered() {
+  const q = fold(S.kQ.trim()), qd = S.kQ.replace(/\D/g, '');
+  return (S.roster || []).filter(s => kInScope(s)
+    && (S.kF !== 'nophone' || !phoneDigits(s.phone))
+    && (!q || fold(s.name).includes(q) || (qd.length >= 4 && s.code.includes(qd))));
+}
+function renderStudents() {
+  const logged = !!S.roster;
+  $('#kLock').hidden = logged; $('#kApp').hidden = !logged;
+  if (!logged) { $('#kSelBar').hidden = true; return; }
+  $('#kTitle').textContent = `Şagirdlər · ${S.roster.filter(s => s.cls !== 'Sınaq').length}`;
+  $('#kUpd').textContent = S.kLoading ? 'Yenilənir…' : S.rosterAt ? `Yeniləndi: ${hm(S.rosterAt)}` : '';
+  $('#kOld').hidden = !S.kOld;
+  const classes = Array.from(new Set(S.roster.map(s => s.cls))).sort(collator.compare);
+  const sel = $('#kCls'), sig = classes.join('|');
+  if (sel.dataset.sig !== sig) {
+    sel.innerHTML = '<option value="">Bütün siniflər</option>' + classes.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    sel.dataset.sig = sig;
+    $('#kClsList').innerHTML = classes.filter(c => c !== 'Sınaq').map(c => `<option value="${esc(c)}"></option>`).join('');
+  }
+  if (S.kCls && !classes.includes(S.kCls)) S.kCls = '';
+  sel.value = S.kCls;
+  renderAddBox();
+  renderStudentList();
+  renderLeft();
+  renderSelBar();
+}
+function cardImg(st) { return `<img class="cardimg" data-card="${esc(st.code)}" alt="${esc(st.name)} üçün QR kart" width="514" height="324">`; }
+async function fillCardImages() {
+  if (!$$('img[data-card]:not([src])').length) return;
+  await fontsReady();
+  $$('img[data-card]:not([src])').forEach(img => {
+    const code = img.dataset.card;
+    const st = studentBy(code) || (S.kAdd && S.kAdd.student && S.kAdd.student.code === code ? S.kAdd.student : null);
+    if (st) img.src = drawCard(st, { qr: true, scale: 0.55, border: true }).toDataURL('image/png');
+  });
+}
+function renderAddBox() {
+  const box = $('#kAddBox'), a = S.kAdd;
+  if (!S.roster || S.kOld) { box.innerHTML = ''; return; }
+  if (!a) { box.innerHTML = '<button class="btn primary big kbig" type="button" data-act="k-add">+ Yeni şagird</button>'; return; }
+  if (a.mode === 'done') {
+    const st = a.student;
+    box.innerHTML = `<div class="panel added">
+      <div class="head"><h2 class="sec">Şagird əlavə edildi</h2><button class="btn sm ghost" type="button" data-act="k-add-close">Bağla</button></div>
+      <div><div class="nm big">${esc(st.name)}</div><div class="sub">${esc(st.cls)} sinif · kart kodu <span class="mono">${esc(fmtCode(st.code))}</span> · ${st.phone ? `valideyn: <span class="mono">${esc(st.phone)}</span>` : '<span class="warn-txt">valideyn nömrəsi yoxdur</span>'}</div></div>
+      ${cardImg(st)}
+      <div class="acts"><button class="btn primary" type="button" data-act="k-card" data-code="${esc(st.code)}" data-where="add">Kartı yüklə (PDF)</button><button class="btn" type="button" data-act="k-add">Daha bir şagird əlavə et</button></div>
+      ${pdfNote('add')}
+      <p class="hint">Skaner bu kartı artıq tanıyır. Kart çap olunana qədər girişdə «Kartını unudan şagird» axtarışından istifadə edin. Bu gün şagird gəlməyənlər siyahısına düşmür, sabahdan hamı kimi sayılır.</p>
+    </div>`;
+    fillCardImages();
+    return;
+  }
+  const d = a.draft || {}, v = k => esc(d[k] || '');
+  const dup = a.dup, lock = a.busy || !!S.kBusy;
+  const dupHtml = !dup ? '' : `<div class="notice">${dup.same.length ? `<b>Bu adda şagird artıq var:</b><ul class="dup">${dup.same.map(x => `<li>${esc(x.name)} · ${esc(x.cls)} sinif · <span class="mono">${esc(fmtCode(x.code))}</span></li>`).join('')}</ul>` : ''}${dup.left.length ? `<b>Bu adda şagird əvvəl məktəbdən çıxarılıb:</b><ul class="dup">${dup.left.map(x => `<li>${esc(x.name)} · ${esc(x.cls)} sinif · ${esc(x.at || '')}<button class="btn sm" type="button" data-act="k-restore" data-code="${esc(x.code)}"${lock ? ' disabled' : ''}>Geri qaytar</button></li>`).join('')}</ul>Eyni uşaqdırsa, «Geri qaytar» basın: köhnə kartı yenə işləyəcək. ` : ''}Başqa uşaqdırsa, yenə də əlavə edin.<div class="acts"><button class="btn sm" type="button" data-act="k-add-force"${lock ? ' disabled' : ''}>Yenə də əlavə et</button></div></div>`;
+  box.innerHTML = `<form class="panel kform" id="kAddForm" novalidate>
+    <div class="head"><h2 class="sec">Yeni şagird</h2><button class="btn sm ghost" type="button" data-act="k-add-close">Bağla</button></div>
+    <div class="grid2">
+      <label class="field"><span>Soyadı və adı</span><input class="inp" name="name" maxlength="80" autocomplete="off" autocapitalize="words" enterkeyhint="next" placeholder="Məsələn: Əliyev Vəli" value="${v('name')}"></label>
+      <label class="field"><span>Sinif</span><input class="inp" name="cls" maxlength="20" list="kClsList" autocomplete="off" enterkeyhint="next" placeholder="Məsələn: 10 a 1" value="${v('cls')}"></label>
+      <label class="field"><span>Valideynin WhatsApp nömrəsi</span><input class="inp mono" name="phone" type="tel" inputmode="tel" maxlength="24" autocomplete="off" enterkeyhint="next" placeholder="050 123 45 67" value="${v('phone')}"></label>
+      <label class="field"><span>Valideynin adı (istəyə görə)</span><input class="inp" name="parent" maxlength="80" autocomplete="off" autocapitalize="words" enterkeyhint="next" value="${v('parent')}"></label>
+    </div>
+    <label class="field"><span>Qeyd (istəyə görə)</span><input class="inp" name="note" maxlength="200" autocomplete="off" enterkeyhint="done" placeholder="Məsələn: Vüsal oğlu" value="${v('note')}"></label>
+    ${a.err ? `<p class="form-err" role="alert">${esc(a.err)}</p>` : ''}
+    ${dupHtml}
+    <div class="acts"><button class="btn primary" type="submit"${lock ? ' disabled' : ''}>${a.busy ? 'Əlavə edilir…' : 'Əlavə et'}</button><span class="hint">Kart kodu özü yaranır. Nömrəni sonra da yaza bilərsiniz.</span></div>
+  </form>`;
+}
+function studentRow(s) {
+  const on = S.kSel.has(s.code), ed = S.kEdit === s.code;
+  const ph = S.kOld ? `${esc(s.cls)} sinif` : !s.phone ? '<span class="warn-txt">nömrə yoxdur</span>' : phoneDigits(s.phone) ? `<span class="mono">${esc(s.phone)}</span>` : `<span class="warn-txt">nömrə səhvdir: ${esc(s.phone)}</span>`;
+  return `<div class="row srow${on ? ' on' : ''}" data-code="${esc(s.code)}">`
+    + `<label class="pick"><input type="checkbox" data-code="${esc(s.code)}"${on ? ' checked' : ''}><span class="vh">${esc(s.name)}: kartını çap üçün seç</span></label>`
+    + `<div class="row-main"><div class="nm">${esc(s.name)}</div><div class="sub">${ph}${s.parent ? ' · ' + esc(s.parent) : ''}</div></div>`
+    + (S.kOld ? '' : `<div class="row-side"><button class="btn sm${ed ? ' primary' : ''}" type="button" data-act="k-edit" data-code="${esc(s.code)}" aria-expanded="${ed}">${ed ? 'Bağla' : 'Düzəliş'}</button></div>`)
+    + (ed ? editorHtml(s) : '') + '</div>';
+}
+function editorHtml(s) {
+  const d = S.kDraft || s, busy = S.kBusy === s.code;
+  const v = k => esc(d[k] != null ? d[k] : (s[k] || ''));
+  const zone = S.kConfirm
+    ? `<div class="confirm"><span><b>${esc(s.name)}</b> siyahıdan çıxarılsın? Kartı daha işləməyəcək, keçmiş qeydləri jurnalda qalacaq.</span><input class="inp" name="reason" maxlength="120" autocomplete="off" placeholder="Səbəb (istəyə görə): başqa məktəbə köçdü" value="${esc(S.kReason || '')}"><button class="btn sm danger" type="button" data-act="k-remove-yes"${busy ? ' disabled' : ''}>${busy ? 'Çıxarılır…' : 'Bəli, çıxar'}</button><button class="btn sm ghost" type="button" data-act="k-remove-no"${busy ? ' disabled' : ''}>Xeyr</button></div>`
+    : `<span class="hint">Kart kodu: <span class="mono">${esc(fmtCode(s.code))}</span></span><button class="btn sm ghost danger" type="button" data-act="k-remove-ask">Məktəbdən getdi</button>`;
+  return `<form class="editor" data-code="${esc(s.code)}" novalidate>
+    <div class="grid2">
+      <label class="field"><span>Soyadı və adı</span><input class="inp" name="name" maxlength="80" autocomplete="off" autocapitalize="words" value="${v('name')}"></label>
+      <label class="field"><span>Sinif</span><input class="inp" name="cls" maxlength="20" list="kClsList" autocomplete="off" value="${v('cls')}"></label>
+      <label class="field"><span>Valideynin WhatsApp nömrəsi</span><input class="inp mono" name="phone" type="tel" inputmode="tel" maxlength="24" autocomplete="off" placeholder="050 123 45 67" value="${v('phone')}"></label>
+      <label class="field"><span>Valideynin adı</span><input class="inp" name="parent" maxlength="80" autocomplete="off" autocapitalize="words" value="${v('parent')}"></label>
+    </div>
+    <label class="field"><span>Qeyd</span><input class="inp" name="note" maxlength="200" autocomplete="off" value="${v('note')}"></label>
+    ${S.kEditErr ? `<p class="form-err" role="alert">${esc(S.kEditErr)}</p>` : ''}
+    <div class="acts"><button class="btn primary" type="submit"${busy ? ' disabled' : ''}>${busy && !S.kConfirm ? 'Yazılır…' : 'Yadda saxla'}</button><button class="btn" type="button" data-act="k-card" data-code="${esc(s.code)}" data-where="edit">Kartı yüklə</button></div>
+    ${pdfNote('edit')}
+    <div class="zone">${zone}</div>
+  </form>`;
+}
+function renderStudentList() {
+  if (!S.roster) return;
+  const scope = S.roster.filter(kInScope);
+  const noPh = scope.filter(s => !phoneDigits(s.phone)).length;
+  const chip = (v, l, n) => `<button type="button" class="chip" data-act="k-chip" data-v="${v}" aria-pressed="${S.kF === v}">${l}<span class="n">${n}</span></button>`;
+  // köhnə server nömrə göndərmir: süzgəc gizlədilir
+  if (S.kOld && S.kF !== 'all') S.kF = 'all';
+  $('#kChips').innerHTML = S.kOld ? '' : chip('all', 'Hamısı', scope.length) + chip('nophone', 'Nömrəsi yoxdur', noPh);
+  const list = kFiltered();
+  $('#kCount').textContent = list.length ? `${list.length} şagird. Kartı çap etmək üçün adın yanındakı xananı işarələyin.` : '';
+  $('#kPdf').textContent = `Siyahının kartları (${list.length})`;
+  $('#kPdf').disabled = !list.length || !!(S.kPdf && S.kPdf.busy);
+  $('#kMsg').innerHTML = pdfNote('list');
+  const box = $('#kList');
+  if (!list.length) { box.innerHTML = `<div class="empty">${S.kQ.trim() ? 'Belə şagird tapılmadı.' : 'Bu seçimə uyğun şagird yoxdur.'}</div>`; return; }
+  const per = {};
+  S.roster.forEach(s => { per[s.cls] = (per[s.cls] || 0) + 1; });
+  let html = '', cur = null;
+  for (const s of list) {
+    if (s.cls !== cur) { cur = s.cls; html += `<div class="grp"><b>${esc(cur || 'Sinifsiz')}</b><span>${per[cur]} şagird</span></div>`; }
+    html += studentRow(s);
+  }
+  box.innerHTML = html;
+}
+function renderLeft() {
+  const L = S.rosterLeft || [], box = $('#kLeftBox');
+  box.hidden = !L.length;
+  if (!L.length) return;
+  $('#kLeftN').textContent = String(L.length);
+  $('#kLeft').innerHTML = L.map(x => `<div class="row"><div class="row-main"><div class="nm">${esc(x.name)}</div><div class="sub">${esc(x.cls)} sinif · çıxarılıb ${esc(x.at || '')}${x.reason ? ' · ' + esc(x.reason) : ''}</div></div>`
+    + (S.kOld ? '' : `<div class="row-side"><button class="btn sm" type="button" data-act="k-restore" data-code="${esc(x.code)}"${S.kBusy ? ' disabled' : ''}>${S.kBusy === x.code ? 'Qaytarılır…' : 'Geri qaytar'}</button></div>`) + '</div>').join('');
+}
+// seçim zolağı görünəndə bildiriş (toast) onun üstünə qalxır
+function liftToast() {
+  const bar = $('#kSelBar');
+  const h = S.tab === 'kartlar' && !bar.hidden ? bar.offsetHeight + 12 : 0;
+  document.documentElement.style.setProperty('--lift', h + 'px');
+}
+function renderSelBar() {
+  const bar = $('#kSelBar'), n = S.kSel.size;
+  if (!S.roster || !n) { bar.hidden = true; bar.innerHTML = ''; liftToast(); return; }
+  bar.hidden = false;
+  const p = S.kPdf && S.kPdf.where === 'sel' ? S.kPdf : null;
+  const open = p && p.url && !p.busy ? `<a class="btn sm" href="${esc(p.url)}" target="_blank" rel="noopener">PDF-i aç</a>` : '';
+  bar.innerHTML = `<span><b>${n}</b> kart seçilib</span><div class="acts">${open}<button class="btn sm primary" type="button" data-act="k-pdf-sel"${p && p.busy ? ' disabled' : ''}>${p && p.busy ? 'Hazırlanır…' : 'Kartları yüklə'}</button><button class="btn sm ghost" type="button" data-act="k-sel-clear" aria-label="Seçimi təmizlə" title="Seçimi təmizlə">✕</button></div>`;
+  liftToast();
+}
+function openAdd() {
+  if (S.kPdf && S.kPdf.where === 'add' && !S.kPdf.busy) S.kPdf = null;
+  S.kAdd = { mode: 'form', draft: {}, err: '', dup: null, busy: false };
+  renderAddBox();
+  const inp = $('#kAddForm [name="name"]');
+  if (inp) { inp.focus(); inp.scrollIntoView({ block: 'center' }); }
+}
+function readForm(f) {
+  const o = {};
+  ['name', 'cls', 'phone', 'parent', 'note'].forEach(k => { const el = f && f.querySelector(`[name="${k}"]`); if (el) o[k] = el.value; });
+  return o;
+}
+function focusField(sel, err) {
+  const k = err === 'bad_name' ? 'name' : err === 'bad_class' ? 'cls' : 'phone';
+  const el = $(`${sel} [name="${k}"]`);
+  if (el) { el.focus(); try { el.select(); } catch (e) { /* ignore */ } }
+}
+async function submitAdd(force) {
+  const a = S.kAdd;
+  if (!a || a.mode !== 'form' || a.busy || S.kBusy) return;
+  a.draft = readForm($('#kAddForm'));
+  const d = a.draft, name = normName(d.name), cls = normCls(d.cls);
+  const err = nameProblem(name) || (cls ? '' : 'bad_class') || (clean(d.phone) ? phoneProblem(d.phone) : '');
+  if (err) { a.err = kErr(err); a.dup = null; renderAddBox(); focusField('#kAddForm', err); return; }
+  // eyni məlumat təkrar göndərilsə, eyni açar gedir: server ikinci şagird yaratmır
+  const sig = JSON.stringify([name, cls, clean(d.phone), clean(d.parent), clean(d.note), !!force]);
+  if (a.sig !== sig) { a.sig = sig; a.id = uid(); }
+  a.err = ''; a.busy = true;
+  if (!force) a.dup = null;
+  renderAddBox();
+  let r = null;
+  try { r = await adminApi('addStudent', { id: a.id, name, cls, phone: clean(d.phone), parent: clean(d.parent), note: clean(d.note), force: !!force }); }
+  catch (e) { a.err = errText(e.code) + ' Yenidən «Əlavə et» basın: şagird iki dəfə yazılmayacaq.'; }
+  a.busy = false;
+  if (S.kAdd !== a) return;
+  if (r && r.ok) {
+    const st = r.student;
+    upsertStudent(st);
+    S.kSel.add(st.code);
+    S.kAdd = { mode: 'done', student: st };
+    renderStudents();
+    toast(`${st.name} əlavə edildi`);
+    return;
+  }
+  if (r && r.error === 'duplicate') a.dup = { same: r.same || [], left: r.left || [] };
+  else if (r) a.err = kErr(r.error, r.message);
+  renderAddBox();
+}
+function openEdit(code) {
+  if (S.kEdit === code) { S.kEdit = ''; S.kDraft = null; renderStudentList(); return; }
+  const s = studentBy(code);
+  if (!s || S.kBusy) return;
+  S.kEdit = code; S.kDraft = { name: s.name, cls: s.cls, phone: s.phone || '', parent: s.parent || '', note: s.note || '' };
+  S.kEditErr = ''; S.kConfirm = false; S.kReason = '';
+  if (S.kPdf && S.kPdf.where === 'edit' && !S.kPdf.busy) S.kPdf = null;
+  renderStudentList();
+  const row = $(`#kList .srow[data-code="${code}"]`);
+  if (row) row.scrollIntoView({ block: 'nearest' });
+}
+async function saveEdit() {
+  const code = S.kEdit, s = studentBy(code);
+  if (!s || S.kBusy) return;
+  S.kDraft = readForm($(`#kList .editor[data-code="${code}"]`));
+  const d = S.kDraft, name = normName(d.name), cls = normCls(d.cls);
+  const err = nameProblem(name) || (cls ? '' : 'bad_class') || (clean(d.phone) ? phoneProblem(d.phone) : '');
+  if (err) { S.kEditErr = kErr(err); renderStudentList(); focusField(`#kList .editor[data-code="${code}"]`, err); return; }
+  S.kEditErr = ''; S.kBusy = code;
+  renderStudentList();
+  let r = null;
+  try { r = await adminApi('editStudent', { code, name, cls, phone: clean(d.phone), parent: clean(d.parent), note: clean(d.note) }); }
+  catch (e) { S.kEditErr = errText(e.code); }
+  S.kBusy = '';
+  if (!S.roster) return;
+  if (r && r.ok) {
+    const st = r.student, cardChanged = st.name !== s.name || st.cls !== s.cls;
+    upsertStudent(st);
+    if (S.kEdit === code) { S.kEdit = ''; S.kDraft = null; }
+    if (cardChanged) S.kSel.add(code);
+    renderStudents();
+    toast(r.unchanged ? 'Dəyişiklik yoxdur' : cardChanged ? 'Yadda saxlanıldı. Kartda ad və ya sinif dəyişdi: yeni kartı çap edin' : 'Yadda saxlanıldı');
+    return;
+  }
+  if (r) S.kEditErr = kErr(r.error, r.message);
+  renderStudentList();
+}
+async function removeStudent() {
+  const code = S.kEdit, s = studentBy(code);
+  if (!s || S.kBusy) return;
+  const inp = $(`#kList .editor[data-code="${code}"] [name="reason"]`);
+  if (inp) S.kReason = inp.value;
+  S.kBusy = code;
+  renderStudentList();
+  let r = null;
+  try { r = await adminApi('removeStudent', { code, reason: clean(S.kReason) }); }
+  catch (e) { S.kEditErr = errText(e.code); }
+  S.kBusy = '';
+  if (!S.roster) return;
+  if (r && r.ok) {
+    S.roster = S.roster.filter(x => x.code !== code);
+    const left = r.left || { code, name: s.name, cls: s.cls, at: '' };
+    S.rosterLeft = [left].concat((S.rosterLeft || []).filter(x => x.code !== code));
+    S.kSel.delete(code); S.kEdit = ''; S.kDraft = null; S.kConfirm = false; S.kReason = ''; S.kEditErr = '';
+    renderStudents();
+    toast(`${s.name} siyahıdan çıxarıldı`);
+    return;
+  }
+  if (r) S.kEditErr = kErr(r.error, r.message);
+  renderStudentList();
+}
+async function restoreStudent(code) {
+  if (S.kBusy || !S.roster) return;
+  S.kBusy = code;
+  renderLeft(); renderAddBox();
+  let r = null;
+  try { r = await adminApi('restoreStudent', { code }); } catch (e) { toast(errText(e.code)); }
+  S.kBusy = '';
+  if (!S.roster) return;
+  if (r && r.ok) {
+    upsertStudent(r.student);
+    S.rosterLeft = (S.rosterLeft || []).filter(y => y.code !== code);
+    if (S.kAdd && S.kAdd.mode === 'form' && S.kAdd.dup) S.kAdd = null;
+    toast(`${r.student.name} geri qaytarıldı: köhnə kartı yenə işləyir`);
+  } else if (r) toast(kErr(r.error, r.message));
+  renderStudents();
+}
+/* kartlar: A4-də 10 kart; PDF faylı yüklənir və ehtiyat üçün açmaq linki göstərilir (telefonda yükləmə alınmasa) */
+async function buildPdf(list, onProgress) {
+  const ns = await need('jspdf', PDF_LIB);
+  await fontsReady();
+  const pdf = new ns.jsPDF({ unit: 'mm', format: 'a4', compress: true });
+  const CW = CARD.w, CH = CARD.h, GX = 4, GY = 2;
+  const mx = (210 - (2 * CW + GX)) / 2, my = (297 - (5 * CH + 4 * GY)) / 2;
+  for (let i = 0; i < list.length; i++) {
+    if (i && i % 10 === 0) pdf.addPage();
+    const slot = i % 10, x = mx + (slot % 2) * (CW + GX), y = my + Math.floor(slot / 2) * (CH + GY);
+    pdf.addImage(drawCard(list[i], { qr: false }).toDataURL('image/jpeg', 0.92), 'JPEG', x, y, CW, CH, undefined, 'FAST');
+    qrPdf(pdf, list[i].code, x + CARD.qx, y + CARD.qy, CARD.qs);
+    pdf.setDrawColor(190, 197, 212); pdf.setLineWidth(0.2); pdf.roundedRect(x, y, CW, CH, 3, 3, 'S');
+    if (i % 4 === 3) { if (onProgress) onProgress((i + 1) / list.length); await sleep(0); }
+  }
+  if (onProgress) onProgress(1);
+  return pdf.output('blob');
+}
+function pdfNote(where) {
+  const p = S.kPdf;
+  if (!p || p.where !== where) return '';
+  if (p.busy) return '<p class="hint" role="status">PDF hazırlanır…</p>';
+  if (p.err) return `<p class="hint warn-txt" role="alert">${esc(p.err)}</p>`;
+  return `<p class="hint" role="status">${p.count > 1 ? `${p.count} kart (${Math.ceil(p.count / 10)} vərəq A4)` : 'Kart'} hazırdır: «${esc(p.name)}». Yüklənməyibsə, <a class="pdf-link" href="${esc(p.url)}" target="_blank" rel="noopener">PDF-i buradan açın</a>. Çapda miqyas 100% olsun.</p>`;
+}
+function renderPdfSpot(where) {
+  if (where === 'add') renderAddBox();
+  else if (where === 'edit') renderStudentList();
+  else if (where === 'sel') renderSelBar();
+  else $('#kMsg').innerHTML = pdfNote('list');
+  const list = S.roster ? kFiltered() : [];
+  $('#kPdf').disabled = !list.length || !!(S.kPdf && S.kPdf.busy);
+}
+function savePdf(url, name) {
+  const a = document.createElement('a');
+  a.href = url; a.download = name; a.rel = 'noopener'; a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => a.remove(), 1000);
+}
+async function makePdf(list, fname, where) {
+  if (!list.length || (S.kPdf && S.kPdf.busy)) return;
+  if (S.kPdf && S.kPdf.url) { const u = S.kPdf.url; setTimeout(() => URL.revokeObjectURL(u), 120000); }
+  const p = S.kPdf = { where, busy: true, count: list.length, name: fname, url: '', err: '' };
+  renderPdfSpot(where);
+  const prog = $('#kProg'), bar = prog.firstElementChild, big = list.length > 10;
+  if (big) { prog.hidden = false; bar.style.width = '0%'; }
+  try {
+    const blob = await buildPdf(list, f => { if (big) bar.style.width = (f * 100).toFixed(1) + '%'; });
+    p.url = URL.createObjectURL(blob);
+    savePdf(p.url, fname);
+    toast(list.length > 1 ? `${list.length} kart hazırdır` : 'Kart hazırdır');
+  } catch (e) {
+    p.err = e && e.message === 'load' ? 'PDF proqram hissəsi yüklənmədi. İnternet bağlantısını yoxlayın.' : 'PDF hazırlanmadı. Yenidən cəhd edin.';
+  } finally {
+    p.busy = false;
+    if (big) setTimeout(() => { prog.hidden = true; }, 900);
+    if (S.kPdf === p) renderPdfSpot(where);
+  }
+}
+const pdfName = list => list.length === 1 ? `QR kart - ${list[0].name}.pdf` : `QR kartlar - ${list.length} şagird.pdf`;
+function listPdf() {
+  const list = kFiltered();
+  const name = S.kCls && !S.kQ.trim() && S.kF === 'all' ? `QR kartlar ${S.kCls}.pdf` : pdfName(list);
+  makePdf(list, name, 'list');
+}
+function selPdf() {
+  const list = (S.roster || []).filter(s => S.kSel.has(s.code));
+  makePdf(list, pdfName(list), 'sel');
+}
+function cardPdf(code, where) {
+  const st = studentBy(code) || (S.kAdd && S.kAdd.student && S.kAdd.student.code === code ? S.kAdd.student : null);
+  if (st) makePdf([st], pdfName([st]), where || 'list');
 }
 
 /* ---------- settings ---------- */
@@ -1353,6 +1790,7 @@ async function testAndSave(apiUrl, pin, device, fromJoin) {
   } finally { $('#cfSave').disabled = false; }
 }
 function renderSettings() {
+  renderInstall();
   if (document.activeElement && document.activeElement.closest && document.activeElement.closest('#cfg')) return;
   $('#cfApi').value = S.api; $('#cfPin').value = S.pin; $('#cfDev').value = S.device;
   $('#joinPanel').hidden = !S.api;
@@ -1390,6 +1828,66 @@ function readJoin() {
   return true;
 }
 
+/* ---------- install as an app (home screen) ---------- */
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent || '') || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent || ''));
+const isStandalone = () => { try { return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return navigator.standalone === true; } };
+let installEvt = null;
+const joinLink = () => `${location.origin}${location.pathname}#qos=${b64urlEncode(JSON.stringify({ a: S.api, p: S.pin }))}`;
+function parseJoin(text) {
+  const m = String(text || '').match(/#qos=([A-Za-z0-9_-]+)/);
+  if (!m) return null;
+  try { const o = JSON.parse(b64urlDecode(m[1])); return o && o.a && o.p ? o : null; } catch (e) { return null; }
+}
+async function copyJoin() {
+  if (!S.api) { toast('Əvvəlcə bu cihazı cədvələ qoşun'); return; }
+  const link = joinLink();
+  let ok = false;
+  try { await navigator.clipboard.writeText(link); ok = true; } catch (e) {
+    // köhnə brauzerlər: gizli xana ilə kopyalanır
+    const ta = document.createElement('textarea');
+    ta.value = link; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch (x) { ok = false; }
+    ta.remove();
+  }
+  toast(ok ? 'Qoşulma linki kopyalandı. Linkdə PIN var, onu başqasına göndərməyin.' : 'Kopyalamaq alınmadı. «QR-ı göstər» ilə qoşun.');
+}
+// ana ekrandakı tətbiq (iPhone) brauzerdən ayrı yaddaş saxlayır: kopyalanan link bir toxunuşla qoşur
+async function pasteJoin() {
+  let text = '';
+  try { text = await navigator.clipboard.readText(); } catch (e) { text = ''; }
+  const o = parseJoin(text);
+  if (!o) {
+    setTab('ayarlar');
+    $('#cfApi').focus();
+    $('#cfMsg').textContent = 'Kopyalanmış link tapılmadı. Ünvan xanasına barmağınızı basıb saxlayın və «Yapışdır» seçin.';
+    return;
+  }
+  $('#cfApi').value = o.a; $('#cfPin').value = o.p;
+  testAndSave(o.a, o.p, $('#cfDev').value || '', true);
+}
+function renderInstall() {
+  const box = $('#installBox');
+  if (!box) return;
+  if (isStandalone()) { box.innerHTML = '<p class="hint"><b>Hazırdır:</b> bu cihazda sayt ana ekrandan tətbiq kimi açılıb.</p>'; return; }
+  if (installEvt) {
+    box.innerHTML = '<div class="acts"><button class="btn primary" type="button" data-act="install">Ana ekrana əlavə et</button></div><p class="hint">Sonra ana ekranda «Giriş Jurnalı» ikonu yaranacaq.</p>';
+    return;
+  }
+  if (isIOS) {
+    box.innerHTML = `<ol class="isteps">${S.api ? '<li><b>«Qoşulma linkini kopyala»</b> basın.<div class="acts"><button class="btn sm" type="button" data-act="join-copy">Qoşulma linkini kopyala</button></div></li>' : ''}`
+      + '<li>Brauzerin <b>paylaş</b> düyməsinə (yuxarı oxlu kvadrat) basın, sonra <b>«Ana ekrana əlavə et»</b> (Add to Home Screen) → <b>«Əlavə et»</b>.</li>'
+      + `<li>Ana ekranda <b>«Giriş Jurnalı»</b> ikonunu açın${S.api ? ' və <b>«Linki yapışdır»</b> basın' : ''}.</li></ol>`
+      + (S.api ? '<p class="hint">iPhone-da ana ekrandakı tətbiq brauzerdən ayrı yaddaş saxlayır. Ona görə onu bir dəfə linklə qoşmaq lazımdır.</p>' : '');
+    return;
+  }
+  box.innerHTML = '<p class="hint">Brauzerin menyusunu (⋮) açın və <b>«Ana ekrana əlavə et»</b> və ya <b>«Tətbiqi quraşdır»</b> seçin. Ana ekranda «Giriş Jurnalı» ikonu yaranacaq.</p>';
+}
+function registerSW() {
+  if (!('serviceWorker' in navigator) || location.protocol !== 'https:') return;
+  navigator.serviceWorker.register('sw.js').catch(() => { /* sayt onsuz da işləyir */ });
+}
+
 /* ---------- shell ---------- */
 function toast(t) {
   const el = $('#toast');
@@ -1408,7 +1906,8 @@ function setTab(t) {
   store.set('tab', t);
   if (t === 'bugun') { renderToday(); if (!S.today || Date.now() - (S.todayAt || 0) > 20000) loadToday(); }
   if (t === 'xeber') { renderNotif(); if (!S.notif || Date.now() - (S.nAt || 0) > 20000) loadNotif(); }
-  if (t === 'kartlar') renderCards();
+  if (t === 'kartlar') { renderStudents(); if (!S.roster && S.admin && S.api) loadRoster(S.admin); }
+  liftToast();
   if (t === 'ayarlar') renderSettings();
 }
 function tick() {
@@ -1457,13 +1956,33 @@ function onClick(e) {
       renderNotif();
       break;
     }
-    case 'k-pdf': makePdf(); break;
-    case 'k-reload': { let p = ''; try { p = sessionStorage.getItem('mgj.admin') || ''; } catch (x) { p = ''; } if (p) loadRoster(p); else { S.roster = null; renderCards(); } break; }
+    case 'k-pdf': listPdf(); break;
+    case 'k-pdf-sel': selPdf(); break;
+    case 'k-card': cardPdf(t.dataset.code, t.dataset.where); break;
+    case 'k-sel-clear': S.kSel.clear(); if (S.kPdf && S.kPdf.where === 'sel' && !S.kPdf.busy) S.kPdf = null; renderStudentList(); renderSelBar(); break;
+    case 'k-reload': if (S.admin) loadRoster(S.admin); else dropAdmin(); break;
+    case 'k-logout': dropAdmin(); toast('Admin rejimindən çıxdınız'); break;
+    case 'k-add': openAdd(); break;
+    case 'k-add-close': S.kAdd = null; renderAddBox(); break;
+    case 'k-add-force': submitAdd(true); break;
+    case 'k-edit': openEdit(t.dataset.code); break;
+    case 'k-remove-ask': S.kConfirm = true; renderStudentList(); { const el = $('#kList .editor [name="reason"]'); if (el) el.focus(); } break;
+    case 'k-remove-no': S.kConfirm = false; renderStudentList(); break;
+    case 'k-remove-yes': removeStudent(); break;
+    case 'k-restore': restoreStudent(t.dataset.code); break;
+    case 'k-chip': S.kF = t.dataset.v; renderStudentList(); break;
     case 'join-show': showJoin(); break;
+    case 'join-copy': copyJoin(); break;
+    case 'paste-join': pasteJoin(); break;
+    case 'install':
+      if (installEvt) { const ev = installEvt; ev.prompt(); Promise.resolve(ev.userChoice).catch(() => null).then(() => { installEvt = null; renderInstall(); }); }
+      break;
     case 'forget': $('#forgetBox').innerHTML = `<span class="hint">Əminsiniz?${S.outbox.length ? ` Göndərilməmiş ${S.outbox.length} skan da silinəcək.` : ''}</span><button class="btn sm danger" type="button" data-act="forget-yes">Bəli, ayır</button><button class="btn sm ghost" type="button" data-act="forget-no">Xeyr</button>`; break;
     case 'forget-no': $('#forgetBox').innerHTML = '<button class="btn danger" type="button" data-act="forget">Bu cihazı ayır</button>'; break;
     case 'forget-yes':
-      ['api', 'pin', 'school', 'info', 'outbox', 'recent', 'markq'].forEach(k => store.del(k));
+      ['api', 'pin', 'school', 'info', 'outbox', 'recent', 'markq', 'admin'].forEach(k => store.del(k));
+      try { sessionStorage.removeItem('mgj.admin'); } catch (x) { /* ignore */ }
+      S.admin = ''; S.roster = null; S.rosterLeft = []; S.kAdd = null; S.kEdit = ''; S.kSel.clear();
       S.api = ''; S.pin = ''; S.school = ''; S.info = null; S.outbox = []; S.recent = []; S.last = null;
       S.markQ = []; S.notif = null; S.nLocal = {}; S.nLast = null; S.nOld = false; S.today = null; S.nSaved.clear(); S.nDraft = {}; S.nPErr = {};
       $('#forgetBox').innerHTML = '<button class="btn danger" type="button" data-act="forget">Bu cihazı ayır</button>';
@@ -1518,14 +2037,68 @@ function bind() {
       if (S.nDeferred && !(ae && ae.closest && ae.closest('#nBody .phone-form'))) renderNotif();
     }, 600);
   });
-  $('#kCls').addEventListener('change', e => { S.kCls = e.target.value; renderCards(); });
-  $('#kForm').addEventListener('submit', e => { e.preventDefault(); loadRoster($('#kPin').value.replace(/\D/g, '')); });
+  // «Şagirdlər»: süzgəc, seçim, yeni şagird və düzəliş formaları
+  $('#kCls').addEventListener('change', e => { S.kCls = e.target.value; renderStudentList(); });
+  const kSearch = debounce(() => renderStudentList(), 150);
+  $('#kQ').addEventListener('input', e => { S.kQ = e.target.value; kSearch(); });
+  $('#kForm').addEventListener('submit', e => { e.preventDefault(); loadRoster($('#kPin').value.replace(/\D/g, ''), $('#kKeep').checked); });
+  $('#kList').addEventListener('change', e => {
+    const cb = e.target.closest && e.target.closest('.pick input');
+    if (!cb) return;
+    if (cb.checked) S.kSel.add(cb.dataset.code); else S.kSel.delete(cb.dataset.code);
+    const row = cb.closest('.srow');
+    if (row) row.classList.toggle('on', cb.checked);
+    if (S.kPdf && S.kPdf.where === 'sel' && !S.kPdf.busy) S.kPdf = null;
+    renderSelBar();
+  });
+  $('#kList').addEventListener('input', e => {
+    const f = e.target.closest && e.target.closest('.editor');
+    if (!f) return;
+    if (e.target.name === 'reason') { S.kReason = e.target.value; return; }
+    S.kDraft = readForm(f);
+    if (S.kEditErr) { S.kEditErr = ''; const er = f.querySelector('.form-err'); if (er) er.remove(); }
+  });
+  $('#kList').addEventListener('submit', e => {
+    if (!(e.target.closest && e.target.closest('.editor'))) return;
+    e.preventDefault();
+    if (S.kConfirm) return; // çıxarmanı yalnız «Bəli, çıxar» düyməsi təsdiqləyir
+    saveEdit();
+  });
+  $('#kKeep').checked = !!store.get('admin', '');
+  $('#kAddBox').addEventListener('input', e => {
+    const a = S.kAdd;
+    if (!a || a.mode !== 'form') return;
+    a.draft = readForm($('#kAddForm'));
+    if (a.err) { a.err = ''; const er = $('#kAddForm .form-err'); if (er) er.remove(); }
+    // ad dəyişibsə, köhnə «artıq var» xəbərdarlığı keçərsizdir
+    if (a.dup && e.target.name === 'name') { a.dup = null; const nt = $('#kAddForm .notice'); if (nt) nt.remove(); }
+  });
+  $('#kAddBox').addEventListener('submit', e => { e.preventDefault(); submitAdd(false); });
+  // ad və sinifdə «Enter» növbəti xanaya keçir, qalanlarında forma göndərilir
+  $('#kAddBox').addEventListener('keydown', e => {
+    if (e.key !== 'Enter' || !e.target.matches || !e.target.matches('#kAddForm input')) return;
+    const next = { name: 'cls', cls: 'phone' }[e.target.name];
+    if (!next) return;
+    e.preventDefault();
+    const el = $(`#kAddForm [name="${next}"]`);
+    if (el) el.focus();
+  });
   $('#cfg').addEventListener('submit', e => { e.preventDefault(); testAndSave($('#cfApi').value, $('#cfPin').value, $('#cfDev').value, false); });
   $('#cfDev').addEventListener('change', e => { S.device = clean(e.target.value).slice(0, 40); store.set('device', S.device); renderHeader(); });
   $('#optSound').addEventListener('change', e => { S.sound = e.target.checked; store.set('sound', S.sound); if (S.sound) armAudio(); });
   $('#optAwake').addEventListener('change', e => { S.awake = e.target.checked; store.set('awake', S.awake); keepAwake(S.awake && !!S.stream); });
   $('#optAuto').addEventListener('change', e => { S.camAuto = e.target.checked; store.set('camAuto', S.camAuto); });
   window.addEventListener('online', flush);
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; renderInstall(); });
+  window.addEventListener('appinstalled', () => { installEvt = null; renderInstall(); toast('Ana ekrana əlavə olundu'); });
+  window.addEventListener('load', registerSW);
+  // qoşulma linki ünvan xanasına yapışdırılsa, ünvan və PIN özü doldurulur
+  $('#cfApi').addEventListener('input', e => {
+    const o = parseJoin(e.target.value);
+    if (!o) return;
+    e.target.value = o.a; $('#cfPin').value = o.p;
+    testAndSave(o.a, o.p, $('#cfDev').value || '', true);
+  });
   window.addEventListener('hashchange', readJoin);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState !== 'visible') return;
@@ -1551,7 +2124,9 @@ async function init() {
   if (readJoin()) return;
   if (!S.api) {
     setTab('ayarlar');
-    showNotice('<b>Xoş gəldiniz.</b> Bu cihazı Google cədvəlinizə qoşmaq üçün aşağıda Web app ünvanını və skaner PIN-ini yazın.');
+    showNotice(`<b>Xoş gəldiniz.</b> ${isStandalone()
+      ? 'Ana ekrandakı tətbiqi bir dəfə cədvələ qoşmaq lazımdır. Brauzerdə saytın «Ayarlar» bölməsində «Qoşulma linkini kopyala» basmısınızsa, indi «Linki yapışdır» basın.'
+      : 'Bu cihazı Google cədvəlinizə qoşmaq üçün aşağıda Web app ünvanını və skaner PIN-ini yazın, ya da başqa cihazdan kopyalanan qoşulma linkini yapışdırın.'}<div class="acts"><button class="btn sm primary" type="button" data-act="paste-join">Linki yapışdır</button></div>`);
     return;
   }
   const saved = store.get('tab', 'skaner');
@@ -1571,7 +2146,7 @@ async function init() {
     if (granted) startCam();
   }
 }
-if (window.__MGJ_TEST__) window.__MGJ = { S, onCode, drawCard, codeOk, startCam, stopCam, loadNotif, loadToday, sfx, fmtPhone, verGe, phoneDigits };
+if (window.__MGJ_TEST__) window.__MGJ = { S, onCode, drawCard, codeOk, startCam, stopCam, loadNotif, loadToday, sfx, fmtPhone, verGe, phoneDigits, normName, normCls, loadRoster, parseJoin, renderInstall, isStandalone };
 init();
 })();
 </script>
